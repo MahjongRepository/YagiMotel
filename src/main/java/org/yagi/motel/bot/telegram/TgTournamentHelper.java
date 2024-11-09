@@ -239,7 +239,7 @@ public class TgTournamentHelper extends TelegramLongPollingBot implements Runnab
       SendMessage sendMessage = new SendMessage();
       sendMessage.setChatId(chatId);
       sendMessage.setText(message);
-      sendMessage.enableMarkdownV2(true);
+      sendMessage.enableMarkdown(true);
       execute(sendMessage);
     } catch (Exception ex) {
       // todo handle
