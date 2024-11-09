@@ -19,4 +19,6 @@ public class AddGameLogRequest {
 
   @JsonProperty("log_link")
   private String logLink;
+
+  private String lang;
 }

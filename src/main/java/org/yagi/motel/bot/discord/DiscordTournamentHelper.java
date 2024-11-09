@@ -170,6 +170,7 @@ public class DiscordTournamentHelper implements Runnable {
                           .senderChatId(chatId)
                           .username(user.getMention())
                           .platformType(PlatformType.DISCORD)
+                          .requestedResponseLang(getRequiredLangFromChannel(chatId, config))
                           .build());
             }
           }

@@ -38,9 +38,11 @@ public class GameFinishRequest {
   @JsonProperty("log_time")
   private Long logTime;
 
+  private String lang;
+
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public static Optional<GameFinishRequest> convertFromTensoulMap(
-      AppConfig config, ObjectMapper mapper, Map tensoulReplayInfo) {
+      AppConfig config, ObjectMapper mapper, Map tensoulReplayInfo, String requestedLang) {
     if (validateTensoulMap(tensoulReplayInfo)) {
       try {
         Map logMap = (Map) tensoulReplayInfo.get("log");
@@ -54,6 +56,7 @@ public class GameFinishRequest {
                 .logTime((Long) ((List) logMap.get("title")).get(1))
                 .players(extractPlayersNicknames((List) logMap.get("playerMapping")))
                 .logContent(mapper.writeValueAsString(logMap))
+                .lang(requestedLang)
                 .build());
       } catch (Exception er) {
         // todo handle error

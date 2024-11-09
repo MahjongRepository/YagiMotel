@@ -76,7 +76,8 @@ public class LogCommandDispatcherActor extends AbstractActor {
 
       if (replayInfo.isPresent()) {
         Optional<GameFinishRequest> gameFinishRequest =
-            GameFinishRequest.convertFromTensoulMap(config, mapper, replayInfo.get());
+            GameFinishRequest.convertFromTensoulMap(
+                config, mapper, replayInfo.get(), message.getRequestedResponseLang());
         if (gameFinishRequest.isPresent()) {
           // todo handle error
           Optional<GameFinishResponse> response =
@@ -144,6 +145,7 @@ public class LogCommandDispatcherActor extends AbstractActor {
             .tournamentId(config.getTournamentId())
             .lobbyId(config.getLobbyId())
             .logLink(tenhouLogLink)
+            .lang(message.getRequestedResponseLang())
             .build();
 
     Optional<AddGameLogResponse> addGameLogResponse =
