@@ -180,6 +180,7 @@ public class DiscordTournamentHelper implements Runnable {
 
   private void processCommandEvent(final ApplicationCommandInteractionEvent event) {
     Interaction interaction = event.getInteraction();
+    boolean eventIsProcessed = false;
     if (interaction.getMember().isPresent()) {
       final Long chatId = interaction.getChannelId().asLong();
       Optional<IsProcessedState> isProcessedState = stateRepository.getIsProcessedState();
@@ -210,11 +211,15 @@ public class DiscordTournamentHelper implements Runnable {
                             .platformType(PlatformType.DISCORD)
                             .requestedResponseLang(getRequiredLangFromChannel(chatId, config))
                             .build());
+                eventIsProcessed = true;
               }
             }
           }
         }
       }
+    }
+    if (!eventIsProcessed) {
+      sendEventReply(event, "command can't processed");
     }
   }
 
