@@ -222,7 +222,7 @@ public class DiscordTournamentHelper implements Runnable {
       }
     }
     if (!eventIsProcessed) {
-      sendEventReply(event, "command can't processed");
+      sendEventReply(event, "Serve commands is disabled or command can't processed");
     }
   }
 
