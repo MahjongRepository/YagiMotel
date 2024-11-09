@@ -181,13 +181,14 @@ public class DiscordTournamentHelper implements Runnable {
   private void processCommandEvent(final ApplicationCommandInteractionEvent event) {
     Interaction interaction = event.getInteraction();
     boolean eventIsProcessed = false;
-    if (interaction.getMember().isPresent()) {
+    if (interaction.getGuildId().isEmpty() || interaction.getMember().isPresent()) {
       final Long chatId = interaction.getChannelId().asLong();
       Optional<IsProcessedState> isProcessedState = stateRepository.getIsProcessedState();
       if (chatId.equals(config.getDiscord().getDiscordAdminChatId())
           || (isProcessedState.isPresent() && IsProcessedState.ENABLE == isProcessedState.get())) {
-        Member user = interaction.getMember().get();
-        if (user.getId().asLong() != config.getDiscord().getDiscordBotUserId()) {
+        final Long userId = interaction.getMember().isPresent() ? interaction.getMember().get().getId().asLong()
+                : interaction.getUser().getId().asLong();
+        if (!userId.equals(config.getDiscord().getDiscordBotUserId())) {
           Optional<String> commandName =
               DiscordInteractionUtils.extractInteractionName(interaction);
           if (commandName.isPresent()) {
@@ -207,7 +208,9 @@ public class DiscordTournamentHelper implements Runnable {
                             .commandUniqueId(eventKey)
                             .commandArgs(commandArgs)
                             .senderChatId(chatId)
-                            .username(user.getNicknameMention())
+                            .username(interaction.getMember().isPresent()
+                                    ? interaction.getMember().get().getNicknameMention()
+                                    : interaction.getUser().getMention())
                             .platformType(PlatformType.DISCORD)
                             .requestedResponseLang(getRequiredLangFromChannel(chatId, config))
                             .build());
