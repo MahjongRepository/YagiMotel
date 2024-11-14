@@ -6,6 +6,7 @@ import static org.yagi.motel.bot.discord.commands.DiscordCommandsFactory.createS
 import static org.yagi.motel.bot.discord.commands.DiscordCommandsFactory.createUpdateTeamsCommand;
 import static org.yagi.motel.bot.discord.utils.DiscordChannelUtils.getRequiredLangFromChannel;
 import static org.yagi.motel.bot.discord.utils.DiscordCommandPermissionsProvider.getAddCommandPermissions;
+import static org.yagi.motel.bot.discord.utils.DiscordCommandPermissionsProvider.getAddPenaltyGameCommandPermissions;
 import static org.yagi.motel.bot.discord.utils.DiscordCommandPermissionsProvider.getCloseRegistrationCommandPermissions;
 import static org.yagi.motel.bot.discord.utils.DiscordCommandPermissionsProvider.getLogCommandPermissions;
 import static org.yagi.motel.bot.discord.utils.DiscordCommandPermissionsProvider.getMeCommandPermissions;
@@ -22,7 +23,6 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ApplicationCommandInteractionEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.command.Interaction;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.discordjson.json.ApplicationCommandData;
@@ -47,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.yagi.motel.bot.discord.utils.DiscordInteractionUtils;
 import org.yagi.motel.config.AppConfig;
 import org.yagi.motel.handler.AddCommandHandler;
+import org.yagi.motel.handler.AddPenaltyGameCommandHandler;
 import org.yagi.motel.handler.CloseRegistrationCommandHandler;
 import org.yagi.motel.handler.CommandHandler;
 import org.yagi.motel.handler.LogCommandHandler;
@@ -187,7 +188,9 @@ public class DiscordTournamentHelper implements Runnable {
       Optional<IsProcessedState> isProcessedState = stateRepository.getIsProcessedState();
       if (chatId.equals(config.getDiscord().getDiscordAdminChatId())
           || (isProcessedState.isPresent() && IsProcessedState.ENABLE == isProcessedState.get())) {
-        final Long userId = interaction.getMember().isPresent() ? interaction.getMember().get().getId().asLong()
+        final Long userId =
+            interaction.getMember().isPresent()
+                ? interaction.getMember().get().getId().asLong()
                 : interaction.getUser().getId().asLong();
         if (!userId.equals(config.getDiscord().getDiscordBotUserId())) {
           Optional<String> commandName =
@@ -209,7 +212,8 @@ public class DiscordTournamentHelper implements Runnable {
                             .commandUniqueId(eventKey)
                             .commandArgs(commandArgs)
                             .senderChatId(chatId)
-                            .username(interaction.getMember().isPresent()
+                            .username(
+                                interaction.getMember().isPresent()
                                     ? interaction.getMember().get().getNicknameMention()
                                     : interaction.getUser().getMention())
                             .platformType(PlatformType.DISCORD)
@@ -275,7 +279,13 @@ public class DiscordTournamentHelper implements Runnable {
     handlers.putIfAbsent(
         "/update_teams",
         registerCommandHandler(
-            UpdateTeamsCommandHandler.class, getHandlerArgs(args, getUpdateTeamsCommandPermissions(config))));
+            UpdateTeamsCommandHandler.class,
+            getHandlerArgs(args, getUpdateTeamsCommandPermissions(config))));
+    handlers.putIfAbsent(
+        "/add_penalty_game",
+        registerCommandHandler(
+            AddPenaltyGameCommandHandler.class,
+            getHandlerArgs(args, getAddPenaltyGameCommandPermissions(config))));
     return Collections.unmodifiableMap(handlers);
   }
 

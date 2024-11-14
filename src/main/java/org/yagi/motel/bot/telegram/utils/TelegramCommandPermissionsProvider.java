@@ -44,6 +44,11 @@ public class TelegramCommandPermissionsProvider {
     return getIds(config.getTelegram().getTgAdminChatId());
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public static Set<Long> getAddPenaltyGameCommandPermissions(AppConfig config) {
+    return getIds(config.getTelegram().getTgAdminChatId());
+  }
+
   private Set<Long> getIds(Long... ids) {
     return new HashSet<>(Arrays.asList(ids));
   }

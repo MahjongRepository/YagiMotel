@@ -68,8 +68,13 @@ public class CommandDispatcherActor extends AbstractActor {
                     break;
                   case UPDATE_TEAMS:
                     commandDispatchersHolder
-                        .getUpdateTeamsDispatcherActor()
+                        .getUpdateTeamsCommandDispatcherActor()
                         .tell(message, getSelf());
+                    break;
+                  case ADD_PENALTY_GAME:
+                    commandDispatchersHolder
+                            .getAddPenaltyGameCommandDispatcherActor()
+                            .tell(message, getSelf());
                     break;
                   default:
                     break;

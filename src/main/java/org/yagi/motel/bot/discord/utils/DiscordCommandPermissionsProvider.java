@@ -57,6 +57,11 @@ public class DiscordCommandPermissionsProvider {
     return getIds(config.getDiscord().getDiscordAdminChatId());
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public static Set<Long> getAddPenaltyGameCommandPermissions(AppConfig config) {
+    return getIds(config.getDiscord().getDiscordAdminChatId());
+  }
+
   private Set<Long> getIds(Long... ids) {
     return new HashSet<>(Arrays.asList(ids));
   }

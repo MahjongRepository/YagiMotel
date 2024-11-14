@@ -1,6 +1,7 @@
 package org.yagi.motel.bot.telegram;
 
 import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getAddCommandPermissions;
+import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getAddPenaltyGameCommandPermissions;
 import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getCloseRegistrationCommandPermissions;
 import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getMeCommandPermissions;
 import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getStartRegistrationCommandPermissions;
@@ -29,6 +30,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.yagi.motel.config.AppConfig;
 import org.yagi.motel.handler.AddCommandHandler;
+import org.yagi.motel.handler.AddPenaltyGameCommandHandler;
 import org.yagi.motel.handler.CloseRegistrationCommandHandler;
 import org.yagi.motel.handler.CommandHandler;
 import org.yagi.motel.handler.LogCommandHandler;
@@ -171,6 +173,11 @@ public class TgTournamentHelper extends TelegramLongPollingBot implements Runnab
         registerCommandHandler(
             UpdateTeamsCommandHandler.class,
             getHandlerArgs(args, getUpdateTeamsCommandPermissions(config))));
+    handlers.putIfAbsent(
+        "/add_penalty_game",
+        registerCommandHandler(
+            AddPenaltyGameCommandHandler.class,
+            getHandlerArgs(args, getAddPenaltyGameCommandPermissions(config))));
     return Collections.unmodifiableMap(handlers);
   }
 

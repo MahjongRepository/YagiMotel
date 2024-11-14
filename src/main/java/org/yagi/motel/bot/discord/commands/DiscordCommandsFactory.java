@@ -80,4 +80,20 @@ public class DiscordCommandsFactory {
         .block();
     return updateTeamsCommandRequest;
   }
+
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
+  public static ApplicationCommandRequest createAddPenaltyGameCommand(
+          DiscordClient client, AppConfig config) {
+    ApplicationCommandRequest addPenaltyGameCommandRequest =
+            ApplicationCommandRequest.builder()
+                    .name("add_penalty_game")
+                    .description("Send penalty game to pantheon over portal")
+                    .build();
+    client
+            .getApplicationService()
+            .createGlobalApplicationCommand(
+                    config.getDiscord().getApplicationId(), addPenaltyGameCommandRequest)
+            .block();
+    return addPenaltyGameCommandRequest;
+  }
 }

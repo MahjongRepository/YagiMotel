@@ -23,6 +23,7 @@ import org.yagi.motel.initializer.container.CommunicationPlatformsContainer;
 import org.yagi.motel.kernel.actor.CommandDispatcherActor;
 import org.yagi.motel.kernel.actor.ErrorCommandDispatcherActor;
 import org.yagi.motel.kernel.actor.blocked.AddCommandDispatcherActor;
+import org.yagi.motel.kernel.actor.blocked.AddPenaltyGameCommandDispatcherActor;
 import org.yagi.motel.kernel.actor.blocked.ChangeStateDispatcherActor;
 import org.yagi.motel.kernel.actor.blocked.CheckNotificationsDispatcherActor;
 import org.yagi.motel.kernel.actor.blocked.CloseRegistrationCommandDispatcherActor;
@@ -256,6 +257,13 @@ public class KernelInitializer {
                 .withMailbox(PriorityMailbox.DISPATCHER_NAME),
             UpdateTeamsCommandDispatcherActor.ACTOR_NAME);
 
+    final ActorRef addPenaltyGameCommandDispatcherActor =
+            actorSystem.actorOf(
+                    AddPenaltyGameCommandDispatcherActor.props(config, commandResultsQueue)
+                            .withRouter(new SmallestMailboxPool(config.getEventsMailboxPool()))
+                            .withMailbox(PriorityMailbox.DISPATCHER_NAME),
+                    AddPenaltyGameCommandDispatcherActor.ACTOR_NAME);
+
     final CommandDispatchersHolder commandDispatchersHolder =
         CommandDispatchersHolder.builder()
             .logCommandDispatcherActor(logCommandDispatcherActor)
@@ -265,7 +273,8 @@ public class KernelInitializer {
             .closeRegistrationCommandDispatcherActor(closeRegistrationCommandDispatcherActor)
             .statusCommandDispatcherActor(statusCommandDispatcherActor)
             .changeStateDispatcherActor(changeStateDispatcherActor)
-            .updateTeamsDispatcherActor(updateTeamsCommandDispatcherActor)
+            .updateTeamsCommandDispatcherActor(updateTeamsCommandDispatcherActor)
+            .addPenaltyGameCommandDispatcherActor(addPenaltyGameCommandDispatcherActor)
             .build();
 
     return actorSystem.actorOf(

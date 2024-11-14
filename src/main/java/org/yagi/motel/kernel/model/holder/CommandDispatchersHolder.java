@@ -15,5 +15,6 @@ public class CommandDispatchersHolder {
   private ActorRef addCommandDispatcherActor;
   private ActorRef statusCommandDispatcherActor;
   private ActorRef changeStateDispatcherActor;
-  private ActorRef updateTeamsDispatcherActor;
+  private ActorRef updateTeamsCommandDispatcherActor;
+  private ActorRef addPenaltyGameCommandDispatcherActor;
 }

@@ -10,5 +10,6 @@ public enum CommandType {
   ME,
   ADD,
   STATUS,
-  UPDATE_TEAMS
+  UPDATE_TEAMS,
+  ADD_PENALTY_GAME
 }
