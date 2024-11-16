@@ -105,7 +105,7 @@ public class TgTournamentHelper extends TelegramLongPollingBot implements Runnab
                             Long.valueOf(RandomStringUtils.randomNumeric(COMMAND_UNIQUE_ID_LENGTH)))
                         .commandArgs(commandArgs)
                         .senderChatId(chatId)
-                        .username(username.get())
+                        .username((username != null && username.isPresent()) ? username.get() : null)
                         .platformType(PlatformType.TG)
                         .requestedResponseLang(Lang.RU.getLang())
                         .build());
