@@ -2,6 +2,7 @@ package org.yagi.motel.kernel.model.container;
 
 import lombok.Builder;
 import lombok.Data;
+import org.yagi.motel.kernel.enums.CommandType;
 import org.yagi.motel.kernel.enums.PlatformType;
 
 @Data
@@ -12,4 +13,5 @@ public class ResultCommandContainer {
   private Long replyChatId;
   private PlatformType platformType;
   private String resultMessage;
+  private CommandType commandType;
 }

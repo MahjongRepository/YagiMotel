@@ -86,7 +86,7 @@ public class TgTournamentHelper extends TelegramLongPollingBot implements Runnab
         && update.getMessage().getChatId() != null) {
       final Long chatId = update.getMessage().getChatId();
       if (update.getMessage().getFrom() == null) {
-        sendMessage("Вы что-то делаете не так. Обратитесь к администратору.", chatId);
+        sendMessage("Вы что-то делаете не так. Обратитесь к администратору.", chatId, false);
       }
       final Optional<String> username = extractUsername(update);
       Optional<IsProcessedState> isProcessedState = stateRepository.getIsProcessedState();
@@ -241,12 +241,14 @@ public class TgTournamentHelper extends TelegramLongPollingBot implements Runnab
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  private void sendMessage(String message, Long chatId) {
+  private void sendMessage(String message, Long chatId, boolean withMarkdown) {
     try {
       SendMessage sendMessage = new SendMessage();
       sendMessage.setChatId(chatId);
       sendMessage.setText(message);
-      sendMessage.enableMarkdown(true);
+      if (withMarkdown) {
+        sendMessage.enableMarkdown(true);
+      }
       execute(sendMessage);
     } catch (Exception ex) {
       // todo handle
@@ -263,7 +265,9 @@ public class TgTournamentHelper extends TelegramLongPollingBot implements Runnab
         switch (resultCommandContainer.getPlatformType()) {
           case TG:
             sendMessage(
-                resultCommandContainer.getResultMessage(), resultCommandContainer.getReplyChatId());
+                resultCommandContainer.getResultMessage(),
+                resultCommandContainer.getReplyChatId(),
+                resultCommandContainer.getCommandType() == null);
             break;
           default:
             break;

@@ -73,6 +73,7 @@ public class StartRegistrationCommandDispatcherActor extends AbstractActor {
                               .resultMessage(message.getPayload().getMessageValue())
                               .replyChatId(message.getPayload().getSenderChatId())
                               .platformType(message.getPlatformType())
+                              .commandType(message.getType())
                               .build());
                     }
                     break;

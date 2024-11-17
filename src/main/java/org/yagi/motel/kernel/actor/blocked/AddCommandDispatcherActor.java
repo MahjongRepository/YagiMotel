@@ -87,6 +87,7 @@ public class AddCommandDispatcherActor extends AbstractActor {
                                       confirmPlayerResponse.get().getMessage()))
                               .replyChatId(message.getPayload().getSenderChatId())
                               .platformType(message.getPlatformType())
+                              .commandType(message.getType())
                               .build());
                     }
                     break;

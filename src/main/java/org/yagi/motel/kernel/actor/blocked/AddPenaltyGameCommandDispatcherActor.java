@@ -74,6 +74,7 @@ public class AddPenaltyGameCommandDispatcherActor extends AbstractActor {
                               .resultMessage(addPenaltyGameResponse.get().getMessage())
                               .replyChatId(message.getPayload().getSenderChatId())
                               .platformType(message.getPlatformType())
+                              .commandType(message.getType())
                               .build());
                     }
                     break;

@@ -73,6 +73,7 @@ public class UpdateTeamsCommandDispatcherActor extends AbstractActor {
                               .resultMessage(sendTeamNamesToPantheonResponse.get().getMessage())
                               .replyChatId(message.getPayload().getSenderChatId())
                               .platformType(message.getPlatformType())
+                              .commandType(message.getType())
                               .build());
                     }
                     break;
