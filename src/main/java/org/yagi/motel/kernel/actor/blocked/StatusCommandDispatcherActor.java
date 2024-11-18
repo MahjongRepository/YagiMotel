@@ -72,6 +72,7 @@ public class StatusCommandDispatcherActor extends AbstractActor {
                               .resultMessage(statusResponse.get().getMessage())
                               .replyChatId(message.getPayload().getSenderChatId())
                               .platformType(message.getPlatformType())
+                              .commandType(message.getType())
                               .build());
                     }
                     break;

@@ -94,6 +94,7 @@ public class LogCommandDispatcherActor extends AbstractActor {
                     .resultMessage(response.get().getMessage())
                     .replyChatId(message.getPayload().getSenderChatId())
                     .platformType(message.getPlatformType())
+                    .commandType(message.getType())
                     .build());
           } else {
             commandResultsQueue.put(
@@ -102,6 +103,7 @@ public class LogCommandDispatcherActor extends AbstractActor {
                     .resultMessage("Ошибка добавления реплея на портал!")
                     .replyChatId(message.getPayload().getSenderChatId())
                     .platformType(message.getPlatformType())
+                    .commandType(message.getType())
                     .build());
           }
 
@@ -113,6 +115,7 @@ public class LogCommandDispatcherActor extends AbstractActor {
                       String.format("Получен невалидный tensoul контент для реплея %s!", hash))
                   .replyChatId(message.getPayload().getSenderChatId())
                   .platformType(message.getPlatformType())
+                  .commandType(message.getType())
                   .build());
         }
 
@@ -123,6 +126,7 @@ public class LogCommandDispatcherActor extends AbstractActor {
                 .resultMessage("Не удалось сконвертировать реплей в tenhou.net формат!")
                 .replyChatId(message.getPayload().getSenderChatId())
                 .platformType(message.getPlatformType())
+                .commandType(message.getType())
                 .build());
       }
     } else {
@@ -132,6 +136,7 @@ public class LogCommandDispatcherActor extends AbstractActor {
               .resultMessage("Не удалось извлечь id реплея, проверьте URL!")
               .replyChatId(message.getPayload().getSenderChatId())
               .platformType(message.getPlatformType())
+              .commandType(message.getType())
               .build());
     }
   }
@@ -161,6 +166,7 @@ public class LogCommandDispatcherActor extends AbstractActor {
               .resultMessage(addGameLogResponse.get().getMessage())
               .replyChatId(message.getPayload().getSenderChatId())
               .platformType(message.getPlatformType())
+              .commandType(message.getType())
               .build());
     } else {
       commandResultsQueue.put(
@@ -169,6 +175,7 @@ public class LogCommandDispatcherActor extends AbstractActor {
               .resultMessage("Ошибка добавления реплея на портал!")
               .replyChatId(message.getPayload().getSenderChatId())
               .platformType(message.getPlatformType())
+              .commandType(message.getType())
               .build());
     }
   }
