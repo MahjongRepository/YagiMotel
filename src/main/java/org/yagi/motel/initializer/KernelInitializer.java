@@ -13,9 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.experimental.UtilityClass;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import org.yagi.motel.bot.discord.DiscordTournamentHelper;
 import org.yagi.motel.bot.telegram.TgTournamentHelper;
 import org.yagi.motel.config.AppConfig;
@@ -146,8 +145,8 @@ public class KernelInitializer {
 
   private static void runTgBot(TgTournamentHelper bot, AppConfig config)
       throws TelegramApiException {
-    final TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-    botsApi.registerBot(bot);
+    final TelegramBotsLongPollingApplication botsApi = new TelegramBotsLongPollingApplication();
+    botsApi.registerBot(config.getTelegram().getTgBotToken(), bot);
     startHandlers(
         config.getTelegram().getMessagesThreadNumber(), TG_MESSAGES_THREAD_PREFIX, () -> bot);
   }

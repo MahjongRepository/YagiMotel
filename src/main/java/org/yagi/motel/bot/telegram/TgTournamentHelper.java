@@ -24,10 +24,13 @@ import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
+import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
 import org.yagi.motel.config.AppConfig;
 import org.yagi.motel.handler.AddCommandHandler;
 import org.yagi.motel.handler.AddPenaltyGameCommandHandler;
@@ -52,13 +55,14 @@ import org.yagi.motel.kernel.repository.StateRepository;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")
-public class TgTournamentHelper extends TelegramLongPollingBot implements Runnable {
+public class TgTournamentHelper implements LongPollingSingleThreadUpdateConsumer, Runnable {
   private static final String WHITESPACE_STR = " ";
   private static final Integer COMMAND_UNIQUE_ID_LENGTH = 10;
   private final Map<String, CommandHandler> handlers;
   private final AppConfig config;
   private final StateRepository stateRepository;
   private final BlockingQueue<ResultCommandContainer> messagesQueue;
+  private final TelegramClient telegramClient;
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public TgTournamentHelper(
@@ -70,6 +74,7 @@ public class TgTournamentHelper extends TelegramLongPollingBot implements Runnab
     this.config = config;
     this.stateRepository = stateRepository;
     this.messagesQueue = messagesQueue;
+    this.telegramClient = new OkHttpTelegramClient(config.getTelegram().getTgBotToken());
     final List<Object> args = new ArrayList<>();
     args.add(config);
     args.add(commandDispatcherActor);
@@ -80,7 +85,7 @@ public class TgTournamentHelper extends TelegramLongPollingBot implements Runnab
   }
 
   @Override
-  public void onUpdateReceived(Update update) {
+  public void consume(Update update) {
     if (update.hasMessage()
         && update.getMessage().hasText()
         && update.getMessage().getChatId() != null) {
@@ -113,16 +118,6 @@ public class TgTournamentHelper extends TelegramLongPollingBot implements Runnab
         }
       }
     }
-  }
-
-  @Override
-  public String getBotUsername() {
-    return config.getTelegram().getTgBotUsername();
-  }
-
-  @Override
-  public String getBotToken() {
-    return config.getTelegram().getTgBotToken();
   }
 
   private PlatformCallbacksHolder registerCallbacks() {
@@ -243,9 +238,7 @@ public class TgTournamentHelper extends TelegramLongPollingBot implements Runnab
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
   private void sendMessage(String message, Long chatId, boolean withMarkdown) {
     try {
-      SendMessage sendMessage = new SendMessage();
-      sendMessage.setChatId(chatId);
-      sendMessage.setText(message);
+      SendMessage sendMessage = new SendMessage(chatId.toString(), message);
       if (withMarkdown) {
         sendMessage.enableMarkdown(true);
       }
@@ -255,6 +248,10 @@ public class TgTournamentHelper extends TelegramLongPollingBot implements Runnab
       log.error("error while execute", ex);
       throw new RuntimeException(ex);
     }
+  }
+
+  private void execute(SendMessage sendMessage) throws TelegramApiException {
+    telegramClient.execute(sendMessage);
   }
 
   @Override
