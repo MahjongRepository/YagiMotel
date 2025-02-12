@@ -16,7 +16,8 @@ targetCompatibility = JavaVersion.VERSION_11
 dependencies {
     implementation "com.typesafe.akka:akka-actor-typed_3:$akkaVersion"
     implementation "ch.qos.logback:logback-classic:$logbackVersion"
-    implementation "org.telegram:telegrambots:$telegramVersion"
+    implementation "org.telegram:telegrambots-longpolling:$telegramVersion"
+    implementation "org.telegram:telegrambots-client:$telegramVersion"
     implementation "org.apache.commons:commons-lang3:$commonsLangVersion"
     implementation "org.yaml:snakeyaml:$snakeYamlVersion"
     implementation "org.apache.httpcomponents.client5:httpclient5:$httpClientVersion"
