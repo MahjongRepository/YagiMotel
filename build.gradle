@@ -1,8 +1,13 @@
 import java.nio.charset.StandardCharsets
 
+plugins {
+    id "com.palantir.java-format" version "$palantirVersion"
+}
+
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'application'
+apply plugin: 'com.palantir.java-format'
 
 repositories {
     mavenCentral()
