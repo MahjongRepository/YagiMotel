@@ -8,14 +8,14 @@ import lombok.Data;
 @Builder
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class StatusRequest {
-  @JsonProperty("api_token")
-  private String apiToken;
+    @JsonProperty("api_token")
+    private String apiToken;
 
-  @JsonProperty("tournament_id")
-  private Long tournamentId;
+    @JsonProperty("tournament_id")
+    private Long tournamentId;
 
-  @JsonProperty("lobby_id")
-  private Long lobbyId;
+    @JsonProperty("lobby_id")
+    private Long lobbyId;
 
-  private String lang;
+    private String lang;
 }

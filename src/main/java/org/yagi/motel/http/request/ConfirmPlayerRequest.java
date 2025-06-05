@@ -8,22 +8,22 @@ import lombok.Data;
 @Builder
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class ConfirmPlayerRequest {
-  @JsonProperty("api_token")
-  private String apiToken;
+    @JsonProperty("api_token")
+    private String apiToken;
 
-  @JsonProperty("tournament_id")
-  private Long tournamentId;
+    @JsonProperty("tournament_id")
+    private Long tournamentId;
 
-  @JsonProperty("lobby_id")
-  private Long lobbyId;
+    @JsonProperty("lobby_id")
+    private Long lobbyId;
 
-  private String nickname;
+    private String nickname;
 
-  @JsonProperty("telegram_username")
-  private String telegramUsername;
+    @JsonProperty("telegram_username")
+    private String telegramUsername;
 
-  @JsonProperty("discord_username")
-  private String discordUsername;
+    @JsonProperty("discord_username")
+    private String discordUsername;
 
-  private String lang;
+    private String lang;
 }

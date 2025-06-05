@@ -10,9 +10,9 @@ import org.yagi.motel.kernel.model.container.InputCommandContainer;
 @Builder
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class InputCommandMessage {
-  private Long messageUniqueId;
-  private CommandType type;
-  private PlatformType platformType;
-  private InputCommandContainer payload;
-  private String requestedResponseLang;
+    private Long messageUniqueId;
+    private CommandType type;
+    private PlatformType platformType;
+    private InputCommandContainer payload;
+    private String requestedResponseLang;
 }

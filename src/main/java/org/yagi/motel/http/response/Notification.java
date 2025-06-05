@@ -6,14 +6,14 @@ import lombok.Data;
 @Data
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class Notification {
-  private String message;
+    private String message;
 
-  @JsonProperty("notification_id")
-  private Long notificationId;
+    @JsonProperty("notification_id")
+    private Long notificationId;
 
-  private short destination;
+    private short destination;
 
-  private String lang;
+    private String lang;
 
-  private String type;
+    private String type;
 }

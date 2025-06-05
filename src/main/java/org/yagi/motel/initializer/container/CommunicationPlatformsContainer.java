@@ -9,6 +9,6 @@ import org.yagi.motel.bot.telegram.TgTournamentHelper;
 @Builder
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class CommunicationPlatformsContainer {
-  private TgTournamentHelper tgBot;
-  private DiscordTournamentHelper discordBot;
+    private TgTournamentHelper tgBot;
+    private DiscordTournamentHelper discordBot;
 }

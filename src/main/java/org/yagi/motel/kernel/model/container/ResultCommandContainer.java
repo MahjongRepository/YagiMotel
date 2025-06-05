@@ -9,9 +9,9 @@ import org.yagi.motel.kernel.enums.PlatformType;
 @Builder
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class ResultCommandContainer {
-  private Long uniqueMessageId;
-  private Long replyChatId;
-  private PlatformType platformType;
-  private String resultMessage;
-  private CommandType commandType;
+    private Long uniqueMessageId;
+    private Long replyChatId;
+    private PlatformType platformType;
+    private String resultMessage;
+    private CommandType commandType;
 }

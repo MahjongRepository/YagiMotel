@@ -5,11 +5,12 @@ import lombok.Getter;
 @Getter
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public enum Lang {
-  RU("ru"), EN("en");
+    RU("ru"),
+    EN("en");
 
-  private final String lang;
+    private final String lang;
 
-  Lang(String lang) {
-    this.lang = lang;
-  }
+    Lang(String lang) {
+        this.lang = lang;
+    }
 }

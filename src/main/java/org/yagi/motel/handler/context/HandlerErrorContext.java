@@ -8,6 +8,6 @@ import org.yagi.motel.handler.enums.ErrorType;
 @Builder
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class HandlerErrorContext {
-  private CommandContext context;
-  private ErrorType errorType;
+    private CommandContext context;
+    private ErrorType errorType;
 }

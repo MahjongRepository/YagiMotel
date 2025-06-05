@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class GameFinishResponse {
-  private String message;
+    private String message;
 
-  @JsonProperty("is_error")
-  private Boolean isError;
+    @JsonProperty("is_error")
+    private Boolean isError;
 }

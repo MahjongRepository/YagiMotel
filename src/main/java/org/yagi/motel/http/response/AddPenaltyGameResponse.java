@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class AddPenaltyGameResponse {
-  private String message;
+    private String message;
 }

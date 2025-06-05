@@ -4,22 +4,22 @@ import java.util.Optional;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public enum PlatformType {
-  TG(0),
-  DISCORD(1);
+    TG(0),
+    DISCORD(1);
 
-  private final int platformCode;
+    private final int platformCode;
 
-  PlatformType(int platformCode) {
-    this.platformCode = platformCode;
-  }
-
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static Optional<PlatformType> getPlatformTypeFromCode(int platformCode) {
-    for (PlatformType platformType : values()) {
-      if (platformType.platformCode == platformCode) {
-        return Optional.of(platformType);
-      }
+    PlatformType(int platformCode) {
+        this.platformCode = platformCode;
     }
-    return Optional.empty();
-  }
+
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
+    public static Optional<PlatformType> getPlatformTypeFromCode(int platformCode) {
+        for (PlatformType platformType : values()) {
+            if (platformType.platformCode == platformCode) {
+                return Optional.of(platformType);
+            }
+        }
+        return Optional.empty();
+    }
 }

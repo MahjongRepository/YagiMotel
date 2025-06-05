@@ -10,9 +10,9 @@ import org.yagi.motel.kernel.enums.PortalNotificationLang;
 @Builder
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class NotificationContainer {
-  private NotificationType notificationType;
-  private String message;
-  private PlatformType platformType;
-  private PortalNotificationLang lang;
-  private String messageType;
+    private NotificationType notificationType;
+    private String message;
+    private PlatformType platformType;
+    private PortalNotificationLang lang;
+    private String messageType;
 }

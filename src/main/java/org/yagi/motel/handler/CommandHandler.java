@@ -5,12 +5,12 @@ import org.yagi.motel.kernel.enums.CommandType;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public interface CommandHandler {
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  void handleCommand(CommandContext context);
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
+    void handleCommand(CommandContext context);
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  boolean checkPermission(CommandContext context);
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
+    boolean checkPermission(CommandContext context);
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  CommandType getType();
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
+    CommandType getType();
 }

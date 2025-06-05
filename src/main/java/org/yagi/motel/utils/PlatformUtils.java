@@ -7,15 +7,16 @@ import org.yagi.motel.kernel.enums.PlatformType;
 @UtilityClass
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class PlatformUtils {
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public static boolean isPlatformEnable(AppConfig config, PlatformType platformType) {
-    if (PlatformType.TG == platformType && Boolean.TRUE.equals(config.getTelegram().getEnable())) {
-      return true;
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
+    public static boolean isPlatformEnable(AppConfig config, PlatformType platformType) {
+        if (PlatformType.TG == platformType
+                && Boolean.TRUE.equals(config.getTelegram().getEnable())) {
+            return true;
+        }
+        if (PlatformType.DISCORD == platformType
+                && Boolean.TRUE.equals(config.getDiscord().getEnable())) {
+            return true;
+        }
+        return false;
     }
-    if (PlatformType.DISCORD == platformType
-        && Boolean.TRUE.equals(config.getDiscord().getEnable())) {
-      return true;
-    }
-    return false;
-  }
 }
