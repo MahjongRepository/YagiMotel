@@ -2,7 +2,7 @@
 
 Platform for interconnection with automate game managment for mahjong-portal.
 
-Written in pure Java and Akka library (https://akka.io/)
+Written in pure Java and Apache Pekko library (https://pekko.apache.org/) which fork of Akka library (https://akka.io/)
 
 Architecture diagram
 ====================
