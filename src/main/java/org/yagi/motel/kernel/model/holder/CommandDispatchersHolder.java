@@ -1,8 +1,8 @@
 package org.yagi.motel.kernel.model.holder;
 
-import akka.actor.ActorRef;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.pekko.actor.ActorRef;
 
 @Data
 @Builder

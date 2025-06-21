@@ -1,8 +1,8 @@
 package org.yagi.motel.kernel.actor;
 
-import akka.actor.AbstractActor;
-import akka.actor.Props;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pekko.actor.AbstractActor;
+import org.apache.pekko.actor.Props;
 import org.yagi.motel.kernel.model.container.ResultCommandContainer;
 
 import java.util.concurrent.BlockingQueue;

@@ -1,6 +1,6 @@
 package org.yagi.motel.handler;
 
-import akka.actor.ActorRef;
+import org.apache.pekko.actor.ActorRef;
 import org.yagi.motel.config.AppConfig;
 import org.yagi.motel.handler.context.CommandContext;
 import org.yagi.motel.handler.enums.ErrorType;

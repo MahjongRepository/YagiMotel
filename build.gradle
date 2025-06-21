@@ -19,7 +19,7 @@ targetCompatibility = JavaVersion.VERSION_11
 [compileJava, compileTestJava].options*.encoding = StandardCharsets.UTF_8.name()
 
 dependencies {
-    implementation "com.typesafe.akka:akka-actor-typed_3:$akkaVersion"
+    implementation "org.apache.pekko:pekko-actor-typed_3:$pekkoVersion"
     implementation "ch.qos.logback:logback-classic:$logbackVersion"
     implementation "org.telegram:telegrambots-longpolling:$telegramVersion"
     implementation "org.telegram:telegrambots-client:$telegramVersion"
@@ -35,8 +35,8 @@ dependencies {
     compileOnly "org.projectlombok:lombok:$lombokVersion"
     annotationProcessor "org.projectlombok:lombok:$lombokVersion"
 
-    testImplementation "com.typesafe.akka:akka-actor-testkit-typed_3:$akkaVersion"
-    testImplementation "com.typesafe.akka:akka-testkit_3:$akkaVersion"
+    testImplementation "org.apache.pekko:pekko-actor-testkit-typed_3:$pekkoVersion"
+    testImplementation "org.apache.pekko:pekko-testkit_3:$pekkoVersion"
     testImplementation "junit:junit:$junitVersion"
 }
 

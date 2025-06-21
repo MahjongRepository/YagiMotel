@@ -1,8 +1,8 @@
 package org.yagi.motel;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pekko.actor.ActorRef;
+import org.apache.pekko.actor.ActorSystem;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.yagi.motel.config.AppConfig;
 import org.yagi.motel.initializer.KernelInitializer;

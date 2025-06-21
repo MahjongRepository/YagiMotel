@@ -1,9 +1,9 @@
 package org.yagi.motel.kernel.actor.blocked;
 
-import akka.actor.AbstractActor;
-import akka.actor.Props;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pekko.actor.AbstractActor;
+import org.apache.pekko.actor.Props;
 import org.yagi.motel.config.AppConfig;
 import org.yagi.motel.http.RestClient;
 import org.yagi.motel.http.request.ConfirmPlayerRequest;

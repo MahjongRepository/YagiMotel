@@ -1,9 +1,9 @@
 package org.yagi.motel.initializer;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.routing.SmallestMailboxPool;
 import lombok.experimental.UtilityClass;
+import org.apache.pekko.actor.ActorRef;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.routing.SmallestMailboxPool;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.yagi.motel.bot.discord.DiscordTournamentHelper;

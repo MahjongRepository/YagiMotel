@@ -1,6 +1,5 @@
 package org.yagi.motel.bot.discord;
 
-import akka.actor.ActorRef;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
@@ -14,6 +13,7 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pekko.actor.ActorRef;
 import org.yagi.motel.bot.discord.utils.DiscordInteractionUtils;
 import org.yagi.motel.config.AppConfig;
 import org.yagi.motel.handler.*;

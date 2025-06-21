@@ -1,9 +1,9 @@
 package org.yagi.motel.kernel.mailbox;
 
-import akka.actor.ActorSystem;
-import akka.dispatch.PriorityGenerator;
-import akka.dispatch.UnboundedPriorityMailbox;
 import com.typesafe.config.Config;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.dispatch.PriorityGenerator;
+import org.apache.pekko.dispatch.UnboundedPriorityMailbox;
 import org.yagi.motel.kernel.message.InputCommandMessage;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
