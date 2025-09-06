@@ -1,0 +1,34 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
+    id "org.jetbrains.kotlin.kapt" version "$kotlinVersion"
+}
+
+apply plugin: 'kotlin-kapt'
+
+group = 'org.yagi.motel.pantheon'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    kapt "org.mapstruct:mapstruct-processor:$mapstructVersion"
+    implementation "org.mapstruct:mapstruct:$mapstructVersion"
+    implementation "com.collectiveidea.twirp:twirp-kmp-runtime:$twirpKmpVersion"
+    implementation "pro.streem.pbandk:pbandk-runtime-jvm:$pbandkVersion"
+    implementation "io.ktor:ktor-client-core:$ktorVersion"
+    implementation "io.ktor:ktor-client-apache5:$ktorVersion"
+}
+
+kapt {
+    keepJavacAnnotationProcessors = true
+    arguments {
+        arg("mapstruct.unmappedTargetPolicy", "IGNORE")
+    }
+}
+
+kotlin {
+    jvmToolchain(11)
+}
