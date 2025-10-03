@@ -9,8 +9,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <jooq.version>3.19.9</jooq.version>
-        <sqlite.version>3.46.0.0</sqlite.version>
+        <jooq.version>3.19.27</jooq.version>
+        <sqlite.version>3.50.3.0</sqlite.version>
     </properties>
 
     <dependencies>
@@ -59,7 +59,7 @@
                             <excludes></excludes>
                         </database>
                         <target>
-                            <packageName>org.yagi.motel.model.dsl</packageName>
+                            <packageName>org.yagi.motel.kernel.model.dsl</packageName>
                             <directory>target/generated-DSL/jooq</directory>
                         </target>
                     </generator>
