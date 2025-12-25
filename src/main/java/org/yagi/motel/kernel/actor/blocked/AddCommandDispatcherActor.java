@@ -55,7 +55,8 @@ public class AddCommandDispatcherActor extends AbstractActor {
                                 String msNickname =
                                         (String) commandContext.get(AddCommandHandler.MS_NICKNAME_CONTEXT_KEY);
                                 Long msFriendId = (Long) commandContext.get(AddCommandHandler.MS_FRIEND_ID_CONTEXT_KEY);
-                                GamePlatformType gamePlatformType = GamePlatformType.fromString((String) commandContext.get(AddCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY));
+                                GamePlatformType gamePlatformType = (GamePlatformType)
+                                        commandContext.get(AddCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY);
 
                                 AdminConfirmPlayerRequest request = AdminConfirmPlayerRequest.builder()
                                         .apiToken(config.getAutobotApiToken())

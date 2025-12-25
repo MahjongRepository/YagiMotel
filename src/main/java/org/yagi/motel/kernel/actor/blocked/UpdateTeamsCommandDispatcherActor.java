@@ -51,7 +51,9 @@ public class UpdateTeamsCommandDispatcherActor extends AbstractActor {
                     if (message.getType() != null) {
                         switch (message.getType()) {
                             case UPDATE_TEAMS:
-                                GamePlatformType gamePlatformType = GamePlatformType.fromString((String) message.getPayload().getContext().get(UpdateTeamsCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY));
+                                GamePlatformType gamePlatformType = (GamePlatformType) message.getPayload()
+                                        .getContext()
+                                        .get(UpdateTeamsCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY);
                                 SendTeamNamesToPantheonRequest request = SendTeamNamesToPantheonRequest.builder()
                                         .apiToken(config.getAutobotApiToken())
                                         .tournamentId(GamePlatformUtils.getTournamentId(config, gamePlatformType))

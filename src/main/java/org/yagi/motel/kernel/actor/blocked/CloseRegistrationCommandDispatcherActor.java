@@ -51,7 +51,9 @@ public class CloseRegistrationCommandDispatcherActor extends AbstractActor {
                     if (message.getType() != null) {
                         switch (message.getType()) {
                             case CLOSE_REGISTRATION:
-                                GamePlatformType gamePlatformType = GamePlatformType.fromString((String) message.getPayload().getContext().get(CloseRegistrationCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY));
+                                GamePlatformType gamePlatformType = (GamePlatformType) message.getPayload()
+                                        .getContext()
+                                        .get(CloseRegistrationCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY);
                                 CloseRegistrationRequest request = CloseRegistrationRequest.builder()
                                         .apiToken(config.getAutobotApiToken())
                                         .tournamentId(GamePlatformUtils.getTournamentId(config, gamePlatformType))
@@ -65,7 +67,7 @@ public class CloseRegistrationCommandDispatcherActor extends AbstractActor {
 
                                 if (baseResponse.isPresent()
                                         && Boolean.TRUE.equals(
-                                        baseResponse.get().getSuccess())) {
+                                                baseResponse.get().getSuccess())) {
                                     commandResultsQueue.put(ResultCommandContainer.builder()
                                             .uniqueMessageId(message.getMessageUniqueId())
                                             .resultMessage(message.getPayload().getMessageValue())

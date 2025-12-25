@@ -50,7 +50,9 @@ public class StatusCommandDispatcherActor extends AbstractActor {
                     if (message.getType() != null) {
                         switch (message.getType()) {
                             case STATUS:
-                                GamePlatformType gamePlatformType = GamePlatformType.fromString((String) message.getPayload().getContext().get(StatusCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY));
+                                GamePlatformType gamePlatformType = (GamePlatformType) message.getPayload()
+                                        .getContext()
+                                        .get(StatusCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY);
                                 StatusRequest request = StatusRequest.builder()
                                         .apiToken(config.getAutobotApiToken())
                                         .tournamentId(GamePlatformUtils.getTournamentId(config, gamePlatformType))
@@ -66,7 +68,8 @@ public class StatusCommandDispatcherActor extends AbstractActor {
                                 if (statusResponse.isPresent()) {
                                     commandResultsQueue.put(ResultCommandContainer.builder()
                                             .uniqueMessageId(message.getMessageUniqueId())
-                                            .resultMessage(statusResponse.get().getMessage())
+                                            .resultMessage(gamePlatformType + ": "
+                                                    + statusResponse.get().getMessage())
                                             .replyChatId(message.getPayload().getSenderChatId())
                                             .platformType(message.getPlatformType())
                                             .commandType(message.getType())
