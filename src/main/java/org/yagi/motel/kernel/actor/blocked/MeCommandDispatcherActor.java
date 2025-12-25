@@ -7,9 +7,10 @@ import org.apache.pekko.actor.Props;
 import org.yagi.motel.config.AppConfig;
 import org.yagi.motel.handler.MeCommandHandler;
 import org.yagi.motel.http.RestClient;
+import org.yagi.motel.http.request.CheckPlayerRequest;
 import org.yagi.motel.http.request.ConfirmPlayerRequest;
+import org.yagi.motel.http.response.CheckPlayerResponse;
 import org.yagi.motel.http.response.ConfirmPlayerResponse;
-import org.yagi.motel.http.response.GetTournamentByConfirmCodeResponse;
 import org.yagi.motel.kernel.enums.PlatformType;
 import org.yagi.motel.kernel.message.InputCommandMessage;
 import org.yagi.motel.kernel.model.container.ResultCommandContainer;
@@ -30,6 +31,7 @@ public class MeCommandDispatcherActor extends AbstractActor {
     private final AppConfig config;
     private final ObjectMapper mapper;
     private final String portalConfirmPlayerUrl;
+    private final String portalCheckPlayerUrl;
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
     public MeCommandDispatcherActor(AppConfig config, BlockingQueue<ResultCommandContainer> commandResultsQueue) {
@@ -38,6 +40,8 @@ public class MeCommandDispatcherActor extends AbstractActor {
         this.mapper = new ObjectMapper();
         this.portalConfirmPlayerUrl =
                 UrlHelper.normalizeUrl(String.format("%s/api/v0/autobot/confirm_player", config.getPortalUrl()));
+        this.portalCheckPlayerUrl =
+                UrlHelper.normalizeUrl(String.format("%s/api/v0/autobot/check_player", config.getPortalUrl()));
     }
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -52,47 +56,87 @@ public class MeCommandDispatcherActor extends AbstractActor {
                     if (message.getType() != null) {
                         switch (message.getType()) {
                             case ME:
-                                //todo: pass confirm code to portal
-                                String codeConfirm = (String) message.getPayload().getContext().get(MeCommandHandler.CONFIRM_CODE_CONTEXT_KEY);
-                                //todo: retreive tournament data from portal
-                                GetTournamentByConfirmCodeResponse response = new GetTournamentByConfirmCodeResponse();
-                                GamePlatformType gamePlatformType = GamePlatformType.fromStringUnsafe(response.getGamePlatformType());
-                                //todo: check if tournamentId == tournamentId in config
+                                String confirmCode = (String) message.getPayload()
+                                        .getContext()
+                                        .get(MeCommandHandler.CONFIRM_CODE_CONTEXT_KEY);
+                                CheckPlayerRequest checkPlayerRequest = CheckPlayerRequest.builder()
+                                        .apiToken(config.getAutobotApiToken())
+                                        .nickname(message.getPayload().getMessageValue())
+                                        .confirmCode(confirmCode)
+                                        .lang(message.getRequestedResponseLang())
+                                        .build();
 
-                                if (response.getTournamentId() != null && gamePlatformType != null) {
-                                    ConfirmPlayerRequest request = ConfirmPlayerRequest.builder()
-                                            .apiToken(config.getAutobotApiToken())
-                                            .tournamentId(response.getTournamentId())
-                                            .lobbyId(GamePlatformUtils.getLobbyId(config, gamePlatformType))
-                                            .nickname(message.getPayload().getMessageValue())
-                                            .telegramUsername(
-                                                    message.getPlatformType() == PlatformType.TG
-                                                            ? message.getPayload().getUsername()
-                                                            : null)
-                                            .discordUsername(
-                                                    message.getPlatformType() == PlatformType.DISCORD
-                                                            ? message.getPayload().getUsername()
-                                                            : null)
-                                            .lang(message.getRequestedResponseLang())
-                                            .build();
+                                Optional<CheckPlayerResponse> checkPlayerResponse = RestClient.sendPost(
+                                        mapper,
+                                        RestClient.preparePostRequest(portalCheckPlayerUrl, checkPlayerRequest, mapper),
+                                        CheckPlayerResponse.class);
 
-                                    Optional<ConfirmPlayerResponse> confirmPlayerResponse = RestClient.sendPost(
-                                            mapper,
-                                            RestClient.preparePostRequest(portalConfirmPlayerUrl, request, mapper),
-                                            ConfirmPlayerResponse.class);
+                                if (checkPlayerResponse.isPresent()
+                                        && checkPlayerResponse
+                                                .get()
+                                                .getIsError()
+                                                .equals(Boolean.FALSE)) {
+                                    GamePlatformType gamePlatformType = GamePlatformType.fromStringUnsafe(
+                                            checkPlayerResponse.get().getGamePlatformType());
+                                    // todo: check if tournamentId == tournamentId in config
 
-                                    if (confirmPlayerResponse.isPresent()) {
-                                        commandResultsQueue.put(ResultCommandContainer.builder()
-                                                .uniqueMessageId(message.getMessageUniqueId())
-                                                .resultMessage(String.format(
-                                                        message.getPlatformType() == PlatformType.TG ? "@%s %s" : "%s %s",
-                                                        message.getPayload().getUsername(),
-                                                        confirmPlayerResponse.get().getMessage()))
-                                                .replyChatId(message.getPayload().getSenderChatId())
-                                                .platformType(message.getPlatformType())
-                                                .commandType(message.getType())
-                                                .build());
+                                    if (checkPlayerResponse.get().getTournamentId() != null
+                                            && gamePlatformType != null) {
+                                        ConfirmPlayerRequest request = ConfirmPlayerRequest.builder()
+                                                .apiToken(config.getAutobotApiToken())
+                                                .tournamentId(checkPlayerResponse
+                                                        .get()
+                                                        .getTournamentId())
+                                                .lobbyId(GamePlatformUtils.getLobbyId(config, gamePlatformType))
+                                                .nickname(message.getPayload().getMessageValue())
+                                                .telegramUsername(
+                                                        message.getPlatformType() == PlatformType.TG
+                                                                ? message.getPayload()
+                                                                        .getUsername()
+                                                                : null)
+                                                .discordUsername(
+                                                        message.getPlatformType() == PlatformType.DISCORD
+                                                                ? message.getPayload()
+                                                                        .getUsername()
+                                                                : null)
+                                                .lang(message.getRequestedResponseLang())
+                                                .build();
+
+                                        Optional<ConfirmPlayerResponse> confirmPlayerResponse = RestClient.sendPost(
+                                                mapper,
+                                                RestClient.preparePostRequest(portalConfirmPlayerUrl, request, mapper),
+                                                ConfirmPlayerResponse.class);
+
+                                        if (confirmPlayerResponse.isPresent()) {
+                                            commandResultsQueue.put(ResultCommandContainer.builder()
+                                                    .uniqueMessageId(message.getMessageUniqueId())
+                                                    .resultMessage(String.format(
+                                                            message.getPlatformType() == PlatformType.TG
+                                                                    ? "@%s %s"
+                                                                    : "%s %s",
+                                                            message.getPayload().getUsername(),
+                                                            confirmPlayerResponse
+                                                                    .get()
+                                                                    .getMessage()))
+                                                    .replyChatId(
+                                                            message.getPayload().getSenderChatId())
+                                                    .platformType(message.getPlatformType())
+                                                    .commandType(message.getType())
+                                                    .build());
+                                        }
                                     }
+                                } else {
+                                    // todo: localization for error
+                                    commandResultsQueue.put(ResultCommandContainer.builder()
+                                            .uniqueMessageId(message.getMessageUniqueId())
+                                            .resultMessage(String.format(
+                                                    message.getPlatformType() == PlatformType.TG ? "@%s %s" : "%s %s",
+                                                    message.getPayload().getUsername(),
+                                                    "Nickname или код подтверждения неверен!"))
+                                            .replyChatId(message.getPayload().getSenderChatId())
+                                            .platformType(message.getPlatformType())
+                                            .commandType(message.getType())
+                                            .build());
                                 }
                                 break;
                             default:
