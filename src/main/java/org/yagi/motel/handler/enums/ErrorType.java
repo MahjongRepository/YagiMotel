@@ -4,5 +4,6 @@ package org.yagi.motel.handler.enums;
 public enum ErrorType {
     COMMAND_NOT_ALLOWED,
     MISSED_USERNAME,
-    MISSED_PLATFORM_USERNAME
+    MISSED_PLATFORM_USERNAME,
+    GAME_PLATFORM_INCORRECT
 }

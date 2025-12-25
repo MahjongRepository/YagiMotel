@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Data;
 import org.yagi.motel.config.AppConfig;
+import org.yagi.motel.kernel.model.enums.GamePlatformType;
+import org.yagi.motel.utils.GamePlatformUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -49,8 +51,8 @@ public class GameFinishRequest {
                 Map logMap = (Map) tensoulReplayInfo.get("log");
                 return Optional.of(GameFinishRequest.builder()
                         .apiToken(config.getAutobotApiToken())
-                        .tournamentId(config.getTournamentId())
-                        .lobbyId(config.getLobbyId())
+                        .tournamentId(GamePlatformUtils.getTournamentId(config, GamePlatformType.MAJSOUL))
+                        .lobbyId(GamePlatformUtils.getLobbyId(config, GamePlatformType.MAJSOUL))
                         .isError(false)
                         .logId((String) logMap.get("ref"))
                         .logTime((Long) ((List) logMap.get("title")).get(1))

@@ -11,6 +11,8 @@ import org.yagi.motel.http.request.AdminConfirmPlayerRequest;
 import org.yagi.motel.http.response.ConfirmPlayerResponse;
 import org.yagi.motel.kernel.message.InputCommandMessage;
 import org.yagi.motel.kernel.model.container.ResultCommandContainer;
+import org.yagi.motel.kernel.model.enums.GamePlatformType;
+import org.yagi.motel.utils.GamePlatformUtils;
 import org.yagi.motel.utils.UrlHelper;
 
 import java.util.Map;
@@ -53,11 +55,12 @@ public class AddCommandDispatcherActor extends AbstractActor {
                                 String msNickname =
                                         (String) commandContext.get(AddCommandHandler.MS_NICKNAME_CONTEXT_KEY);
                                 Long msFriendId = (Long) commandContext.get(AddCommandHandler.MS_FRIEND_ID_CONTEXT_KEY);
+                                GamePlatformType gamePlatformType = GamePlatformType.fromString((String) commandContext.get(AddCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY));
 
                                 AdminConfirmPlayerRequest request = AdminConfirmPlayerRequest.builder()
                                         .apiToken(config.getAutobotApiToken())
-                                        .tournamentId(config.getTournamentId())
-                                        .lobbyId(config.getLobbyId())
+                                        .tournamentId(GamePlatformUtils.getTournamentId(config, gamePlatformType))
+                                        .lobbyId(GamePlatformUtils.getLobbyId(config, gamePlatformType))
                                         .nickname(msNickname)
                                         .friendId(msFriendId)
                                         .telegramUsername(message.getPayload().getUsername())

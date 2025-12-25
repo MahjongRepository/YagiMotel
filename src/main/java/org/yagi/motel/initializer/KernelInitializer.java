@@ -18,6 +18,7 @@ import org.yagi.motel.kernel.mailbox.PriorityMailbox;
 import org.yagi.motel.kernel.message.CheckNotificationMessage;
 import org.yagi.motel.kernel.model.container.NotificationContainer;
 import org.yagi.motel.kernel.model.container.ResultCommandContainer;
+import org.yagi.motel.kernel.model.enums.GamePlatformType;
 import org.yagi.motel.kernel.model.enums.IsProcessedState;
 import org.yagi.motel.kernel.model.holder.CommandDispatchersHolder;
 import org.yagi.motel.kernel.repository.StateRepository;
@@ -54,16 +55,30 @@ public class KernelInitializer {
             final AppConfig config,
             final StateRepository stateRepository,
             final BlockingQueue<NotificationContainer> notificationsQueue) {
-        final ActorRef checkNotificationsDispatcherActor = actorSystem.actorOf(
-                CheckNotificationsDispatcherActor.props(config, stateRepository, notificationsQueue)
+        final ActorRef checkTenhouNotificationsDispatcherActor = actorSystem.actorOf(
+                CheckNotificationsDispatcherActor.props(config, stateRepository, notificationsQueue, GamePlatformType.TENHOU)
                         .withRouter(new SmallestMailboxPool(1)),
-                CheckNotificationsDispatcherActor.ACTOR_NAME);
+                CheckNotificationsDispatcherActor.ACTOR_NAME + "-tenhou");
         actorSystem
                 .scheduler()
                 .scheduleWithFixedDelay(
                         Duration.ZERO,
                         Duration.ofSeconds(config.getCheckNotificationsIntervalInSeconds()),
-                        checkNotificationsDispatcherActor,
+                        checkTenhouNotificationsDispatcherActor,
+                        new CheckNotificationMessage(),
+                        actorSystem.dispatcher(),
+                        ActorRef.noSender());
+
+        final ActorRef checkMajsoulNotificationsDispatcherActor = actorSystem.actorOf(
+                CheckNotificationsDispatcherActor.props(config, stateRepository, notificationsQueue, GamePlatformType.MAJSOUL)
+                        .withRouter(new SmallestMailboxPool(1)),
+                CheckNotificationsDispatcherActor.ACTOR_NAME + "-majsoul");
+        actorSystem
+                .scheduler()
+                .scheduleWithFixedDelay(
+                        Duration.ZERO,
+                        Duration.ofSeconds(config.getCheckNotificationsIntervalInSeconds()),
+                        checkMajsoulNotificationsDispatcherActor,
                         new CheckNotificationMessage(),
                         actorSystem.dispatcher(),
                         ActorRef.noSender());
@@ -157,15 +172,15 @@ public class KernelInitializer {
             BlockingQueue<ResultCommandContainer> discordMessagesQueue) {
         final TgTournamentHelper tgBot = PlatformUtils.isPlatformEnable(config, PlatformType.TG)
                 ? new TgTournamentHelper(
-                        commandDispatcherActor, errorCommandDispatcherActor, config, stateRepository, tgMessagesQueue)
+                commandDispatcherActor, errorCommandDispatcherActor, config, stateRepository, tgMessagesQueue)
                 : null;
         final DiscordTournamentHelper discordBot = PlatformUtils.isPlatformEnable(config, PlatformType.DISCORD)
                 ? new DiscordTournamentHelper(
-                        commandDispatcherActor,
-                        errorCommandDispatcherActor,
-                        config,
-                        stateRepository,
-                        discordMessagesQueue)
+                commandDispatcherActor,
+                errorCommandDispatcherActor,
+                config,
+                stateRepository,
+                discordMessagesQueue)
                 : null;
         return CommunicationPlatformsContainer.builder()
                 .tgBot(tgBot)

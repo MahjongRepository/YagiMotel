@@ -18,7 +18,6 @@ import org.yagi.motel.handler.context.HandlerErrorContext;
 import org.yagi.motel.handler.holder.PlatformCallbacksHolder;
 import org.yagi.motel.kernel.enums.PlatformType;
 import org.yagi.motel.kernel.model.container.ResultCommandContainer;
-import org.yagi.motel.kernel.model.enums.GamePlatformType;
 import org.yagi.motel.kernel.model.enums.IsProcessedState;
 import org.yagi.motel.kernel.model.enums.Lang;
 import org.yagi.motel.kernel.repository.StateRepository;
@@ -171,9 +170,9 @@ public class TgTournamentHelper implements LongPollingSingleThreadUpdateConsumer
                     return Optional.of(String.format(
                             "Перед привязкой %s ника нужно установить username в настройках "
                                     + "телеграма. Инструкция: http://telegramzy.ru/nik-v-telegramm/",
-                            GamePlatformType.fromString(config.getGamePlatform()) == GamePlatformType.MAJSOUL
-                                    ? "mahjongsoul"
-                                    : "tenhou.net"));
+                            "mahjongsoul или tenhou.net"));
+                case GAME_PLATFORM_INCORRECT:
+                    return Optional.of("Game platform incorrect!");
                 default:
                     break;
             }

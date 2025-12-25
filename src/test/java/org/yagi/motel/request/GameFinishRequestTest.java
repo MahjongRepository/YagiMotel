@@ -4,13 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.yagi.motel.config.AppConfig;
+import org.yagi.motel.config.properties.TournamentProperties;
+import org.yagi.motel.config.properties.TournamentsProperties;
+import org.yagi.motel.http.request.GameFinishRequest;
+import org.yagi.motel.kernel.actor.blocked.LogCommandDispatcherActor;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
-import org.yagi.motel.http.request.GameFinishRequest;
-import org.yagi.motel.kernel.actor.blocked.LogCommandDispatcherActor;
 
 public class GameFinishRequestTest {
 
@@ -27,10 +29,17 @@ public class GameFinishRequestTest {
                 new File(classLoader.getResource("tensoul.json").getFile()), Map.class);
         Map replayMap = (Map) tensoulReplayInfo.get("log");
 
+        TournamentProperties tournamentProperties = new TournamentProperties();
+        tournamentProperties.setTournamentId(tournamentId);
+        tournamentProperties.setLobbyId(lobbyId);
+        tournamentProperties.setGamePlatform("majsoul");
+
+        TournamentsProperties tournamentsProperties = new TournamentsProperties();
+        tournamentsProperties.setMajsoul(tournamentProperties);
+
         AppConfig config = new AppConfig();
         config.setAutobotApiToken(autobotToken);
-        config.setLobbyId(lobbyId);
-        config.setTournamentId(tournamentId);
+        config.setTournaments(tournamentsProperties);
 
         GameFinishRequest gameFinishRequest =
                 GameFinishRequest.convertFromTensoulMap(config, objectMapper, tensoulReplayInfo, "ru").get();
@@ -62,10 +71,17 @@ public class GameFinishRequestTest {
                 new File(classLoader.getResource("tensoul_with_same_nickname.json").getFile()), Map.class);
         Map replayMap = (Map) tensoulReplayInfo.get("log");
 
+        TournamentProperties tournamentProperties = new TournamentProperties();
+        tournamentProperties.setTournamentId(tournamentId);
+        tournamentProperties.setLobbyId(lobbyId);
+        tournamentProperties.setGamePlatform("majsoul");
+
+        TournamentsProperties tournamentsProperties = new TournamentsProperties();
+        tournamentsProperties.setMajsoul(tournamentProperties);
+
         AppConfig config = new AppConfig();
         config.setAutobotApiToken(autobotToken);
-        config.setLobbyId(lobbyId);
-        config.setTournamentId(tournamentId);
+        config.setTournaments(tournamentsProperties);
 
         GameFinishRequest gameFinishRequest =
                 GameFinishRequest.convertFromTensoulMap(config, objectMapper, tensoulReplayInfo, "ru").get();
