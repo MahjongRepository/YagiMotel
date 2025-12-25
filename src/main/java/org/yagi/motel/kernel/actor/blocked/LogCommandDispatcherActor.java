@@ -14,6 +14,8 @@ import org.yagi.motel.http.response.AddGameLogResponse;
 import org.yagi.motel.http.response.GameFinishResponse;
 import org.yagi.motel.kernel.message.InputCommandMessage;
 import org.yagi.motel.kernel.model.container.ResultCommandContainer;
+import org.yagi.motel.kernel.model.enums.GamePlatformType;
+import org.yagi.motel.utils.GamePlatformUtils;
 import org.yagi.motel.utils.ReplayUrlHelper;
 import org.yagi.motel.utils.UrlHelper;
 
@@ -64,7 +66,7 @@ public class LogCommandDispatcherActor extends AbstractActor {
             String hash = hashOptional.get();
             String tensoulUrl = String.format(
                     "%s/convert/?id=%s&lobby_id=%d&app_token=%s",
-                    config.getTensoulUrl(), hash, config.getLobbyId(), config.getTensoulAppToken());
+                    config.getTensoulUrl(), hash, config.getTournaments().getMajsoul().getLobbyId(), config.getTensoulAppToken());
             tensoulUrl = UrlHelper.normalizeUrl(tensoulUrl);
             Optional<Map> replayInfo = RestClient.sendGet(mapper, RestClient.prepareGetRequest(tensoulUrl), Map.class);
 
@@ -130,8 +132,8 @@ public class LogCommandDispatcherActor extends AbstractActor {
         String tenhouLogLink = message.getPayload().getMessageValue();
         AddGameLogRequest addGameLogRequest = AddGameLogRequest.builder()
                 .apiToken(config.getAutobotApiToken())
-                .tournamentId(config.getTournamentId())
-                .lobbyId(config.getLobbyId())
+                .tournamentId(GamePlatformUtils.getTournamentId(config, GamePlatformType.TENHOU))
+                .lobbyId(GamePlatformUtils.getLobbyId(config, GamePlatformType.TENHOU))
                 .logLink(tenhouLogLink)
                 .lang(message.getRequestedResponseLang())
                 .build();

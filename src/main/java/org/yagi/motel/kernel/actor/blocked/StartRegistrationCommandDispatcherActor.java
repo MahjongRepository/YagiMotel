@@ -5,11 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.pekko.actor.AbstractActor;
 import org.apache.pekko.actor.Props;
 import org.yagi.motel.config.AppConfig;
+import org.yagi.motel.handler.StartRegistrationCommandHandler;
 import org.yagi.motel.http.RestClient;
 import org.yagi.motel.http.request.OpenRegistrationRequest;
 import org.yagi.motel.http.response.BaseResponse;
 import org.yagi.motel.kernel.message.InputCommandMessage;
 import org.yagi.motel.kernel.model.container.ResultCommandContainer;
+import org.yagi.motel.kernel.model.enums.GamePlatformType;
+import org.yagi.motel.utils.GamePlatformUtils;
 import org.yagi.motel.utils.UrlHelper;
 
 import java.util.Optional;
@@ -48,10 +51,11 @@ public class StartRegistrationCommandDispatcherActor extends AbstractActor {
                     if (message.getType() != null) {
                         switch (message.getType()) {
                             case START_REGISTRATION:
+                                GamePlatformType gamePlatformType = (GamePlatformType) message.getPayload().getContext().get(StartRegistrationCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY);
                                 OpenRegistrationRequest request = OpenRegistrationRequest.builder()
                                         .apiToken(config.getAutobotApiToken())
-                                        .tournamentId(config.getTournamentId())
-                                        .lobbyId(config.getLobbyId())
+                                        .tournamentId(GamePlatformUtils.getTournamentId(config, gamePlatformType))
+                                        .lobbyId(GamePlatformUtils.getLobbyId(config, gamePlatformType))
                                         .build();
 
                                 Optional<BaseResponse> baseResponse = RestClient.sendPost(
@@ -61,7 +65,7 @@ public class StartRegistrationCommandDispatcherActor extends AbstractActor {
 
                                 if (baseResponse.isPresent()
                                         && Boolean.TRUE.equals(
-                                                baseResponse.get().getSuccess())) {
+                                        baseResponse.get().getSuccess())) {
                                     commandResultsQueue.put(ResultCommandContainer.builder()
                                             .uniqueMessageId(message.getMessageUniqueId())
                                             .resultMessage(message.getPayload().getMessageValue())

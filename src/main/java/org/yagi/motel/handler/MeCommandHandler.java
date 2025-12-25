@@ -10,10 +10,14 @@ import org.yagi.motel.kernel.enums.CommandType;
 import org.yagi.motel.kernel.message.InputCommandMessage;
 import org.yagi.motel.kernel.model.container.InputCommandContainer;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class MeCommandHandler extends BaseHandler implements CommandHandler {
+
+    public static final String CONFIRM_CODE_CONTEXT_KEY = "confirm_code";
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
     public MeCommandHandler(
@@ -40,20 +44,27 @@ public class MeCommandHandler extends BaseHandler implements CommandHandler {
         String[] commandArgs = context.getCommandArgs();
         if (commandArgs.length >= 2) {
             String playerUsername = StringUtils.normalizeSpace(commandArgs[1]);
-            getCommandDispatcherActor()
-                    .tell(
-                            InputCommandMessage.builder()
-                                    .messageUniqueId(context.getCommandUniqueId())
-                                    .type(getType())
-                                    .payload(InputCommandContainer.builder()
-                                            .messageValue(playerUsername)
-                                            .senderChatId(context.getSenderChatId())
-                                            .username(context.getUsername())
-                                            .build())
-                                    .platformType(context.getPlatformType())
-                                    .requestedResponseLang(context.getRequestedResponseLang())
-                                    .build(),
-                            ActorRef.noSender());
+            String confirmCode = StringUtils.normalizeSpace(commandArgs[2]);
+            //todo: pass error for user about empty confirm code
+            if (!confirmCode.isEmpty()) {
+                Map<String, Object> meCommandContext = new HashMap<>();
+                meCommandContext.put(CONFIRM_CODE_CONTEXT_KEY, confirmCode);
+                getCommandDispatcherActor()
+                        .tell(
+                                InputCommandMessage.builder()
+                                        .messageUniqueId(context.getCommandUniqueId())
+                                        .type(getType())
+                                        .payload(InputCommandContainer.builder()
+                                                .messageValue(playerUsername)
+                                                .senderChatId(context.getSenderChatId())
+                                                .username(context.getUsername())
+                                                .context(meCommandContext)
+                                                .build())
+                                        .platformType(context.getPlatformType())
+                                        .requestedResponseLang(context.getRequestedResponseLang())
+                                        .build(),
+                                ActorRef.noSender());
+            }
         } else {
             sendErrorReply(context, ErrorType.MISSED_USERNAME);
         }

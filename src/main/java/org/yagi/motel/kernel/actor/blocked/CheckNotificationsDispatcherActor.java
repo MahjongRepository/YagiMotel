@@ -16,8 +16,10 @@ import org.yagi.motel.kernel.enums.PlatformType;
 import org.yagi.motel.kernel.enums.PortalNotificationLang;
 import org.yagi.motel.kernel.message.CheckNotificationMessage;
 import org.yagi.motel.kernel.model.container.NotificationContainer;
+import org.yagi.motel.kernel.model.enums.GamePlatformType;
 import org.yagi.motel.kernel.model.enums.IsProcessedState;
 import org.yagi.motel.kernel.repository.StateRepository;
+import org.yagi.motel.utils.GamePlatformUtils;
 import org.yagi.motel.utils.UrlHelper;
 
 import java.io.IOException;
@@ -36,12 +38,14 @@ public class CheckNotificationsDispatcherActor extends AbstractActor {
     private final AppConfig config;
     private final ObjectMapper mapper;
     private final StateRepository stateRepository;
+    private final GamePlatformType gamePlatformType;
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
     public CheckNotificationsDispatcherActor(
             AppConfig config,
             StateRepository stateRepository,
-            BlockingQueue<NotificationContainer> notificationsQueue) {
+            BlockingQueue<NotificationContainer> notificationsQueue,
+            GamePlatformType gamePlatformType) {
         this.config = config;
         this.notificationsQueue = notificationsQueue;
         this.mapper = new ObjectMapper();
@@ -50,14 +54,16 @@ public class CheckNotificationsDispatcherActor extends AbstractActor {
                 UrlHelper.normalizeUrl(String.format("%s/api/v0/autobot/check_notifications", config.getPortalUrl()));
         this.portalProcessNotificationUrl =
                 UrlHelper.normalizeUrl(String.format("%s/api/v0/autobot/process_notification", config.getPortalUrl()));
+        this.gamePlatformType = gamePlatformType;
     }
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
     public static Props props(
             AppConfig config,
             StateRepository stateRepository,
-            BlockingQueue<NotificationContainer> notificationsQueue) {
-        return Props.create(CheckNotificationsDispatcherActor.class, config, stateRepository, notificationsQueue);
+            BlockingQueue<NotificationContainer> notificationsQueue,
+            GamePlatformType gamePlatformType) {
+        return Props.create(CheckNotificationsDispatcherActor.class, config, stateRepository, notificationsQueue, gamePlatformType);
     }
 
     @Override
@@ -68,8 +74,8 @@ public class CheckNotificationsDispatcherActor extends AbstractActor {
                     if (isProcessedState.isPresent() && IsProcessedState.ENABLE == isProcessedState.get()) {
                         CheckNotificationRequest request = CheckNotificationRequest.builder()
                                 .apiToken(config.getAutobotApiToken())
-                                .tournamentId(config.getTournamentId())
-                                .lobbyId(config.getLobbyId())
+                                .tournamentId(GamePlatformUtils.getTournamentId(config, gamePlatformType))
+                                .lobbyId(GamePlatformUtils.getLobbyId(config, gamePlatformType))
                                 .build();
 
                         Optional<CheckNotificationResponse> checkNotificationResponse = RestClient.sendPost(
@@ -79,9 +85,9 @@ public class CheckNotificationsDispatcherActor extends AbstractActor {
 
                         if (checkNotificationResponse.isPresent()
                                 && !checkNotificationResponse
-                                        .get()
-                                        .getNotifications()
-                                        .isEmpty()) {
+                                .get()
+                                .getNotifications()
+                                .isEmpty()) {
                             for (final Notification notification :
                                     checkNotificationResponse.get().getNotifications()) {
                                 processNotification(notification);
@@ -97,8 +103,8 @@ public class CheckNotificationsDispatcherActor extends AbstractActor {
         if (notification != null) {
             ProcessNotificationRequest processNotificationRequest = ProcessNotificationRequest.builder()
                     .apiToken(config.getAutobotApiToken())
-                    .tournamentId(config.getTournamentId())
-                    .lobbyId(config.getLobbyId())
+                    .tournamentId(GamePlatformUtils.getTournamentId(config, gamePlatformType))
+                    .lobbyId(GamePlatformUtils.getLobbyId(config, gamePlatformType))
                     .notificationId(notification.getNotificationId())
                     .build();
 

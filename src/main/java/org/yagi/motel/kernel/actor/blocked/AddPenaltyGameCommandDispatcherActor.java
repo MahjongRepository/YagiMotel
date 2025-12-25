@@ -5,11 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.pekko.actor.AbstractActor;
 import org.apache.pekko.actor.Props;
 import org.yagi.motel.config.AppConfig;
+import org.yagi.motel.handler.AddPenaltyGameCommandHandler;
 import org.yagi.motel.http.RestClient;
 import org.yagi.motel.http.request.AddPenaltyGameRequest;
 import org.yagi.motel.http.response.AddPenaltyGameResponse;
 import org.yagi.motel.kernel.message.InputCommandMessage;
 import org.yagi.motel.kernel.model.container.ResultCommandContainer;
+import org.yagi.motel.kernel.model.enums.GamePlatformType;
+import org.yagi.motel.utils.GamePlatformUtils;
 import org.yagi.motel.utils.UrlHelper;
 
 import java.util.Optional;
@@ -48,10 +51,11 @@ public class AddPenaltyGameCommandDispatcherActor extends AbstractActor {
                     if (message.getType() != null) {
                         switch (message.getType()) {
                             case ADD_PENALTY_GAME:
+                                GamePlatformType gamePlatformType = (GamePlatformType) message.getPayload().getContext().get(AddPenaltyGameCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY);
                                 AddPenaltyGameRequest request = AddPenaltyGameRequest.builder()
                                         .apiToken(config.getAutobotApiToken())
-                                        .tournamentId(config.getTournamentId())
-                                        .lobbyId(config.getLobbyId())
+                                        .tournamentId(GamePlatformUtils.getTournamentId(config, gamePlatformType))
+                                        .lobbyId(GamePlatformUtils.getLobbyId(config, gamePlatformType))
                                         .lang(message.getRequestedResponseLang())
                                         .gameId(Long.valueOf(
                                                 message.getPayload().getMessageValue()))

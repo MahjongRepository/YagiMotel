@@ -15,4 +15,12 @@ public enum GamePlatformType {
             return TENHOU;
         }
     }
+
+    public static GamePlatformType fromStringUnsafe(String platform) {
+        try {
+            return valueOf(platform.toUpperCase(Locale.US));
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 }
