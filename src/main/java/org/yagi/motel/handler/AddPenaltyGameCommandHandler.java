@@ -36,7 +36,7 @@ public class AddPenaltyGameCommandHandler extends BaseHandler implements Command
         }
 
         String[] commandArgs = context.getCommandArgs();
-        if (commandArgs.length >= 2) {
+        if (commandArgs.length >= 3) {
             String commandValue = commandArgs[1].trim();
             String gamePlatformPrefix = StringUtils.normalizeSpace(commandArgs[2]);
             GamePlatformType gamePlatformType = GamePlatformType.fromStringUnsafe(gamePlatformPrefix);

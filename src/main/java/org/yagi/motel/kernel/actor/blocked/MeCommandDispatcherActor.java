@@ -78,10 +78,12 @@ public class MeCommandDispatcherActor extends AbstractActor {
                                                 .equals(Boolean.FALSE)) {
                                     GamePlatformType gamePlatformType = GamePlatformType.fromStringUnsafe(
                                             checkPlayerResponse.get().getGamePlatformType());
-                                    // todo: check if tournamentId == tournamentId in config
-
                                     if (checkPlayerResponse.get().getTournamentId() != null
-                                            && gamePlatformType != null) {
+                                            && gamePlatformType != null
+                                            && GamePlatformUtils.getTournamentId(config, gamePlatformType)
+                                                    .equals(checkPlayerResponse
+                                                            .get()
+                                                            .getTournamentId())) {
                                         ConfirmPlayerRequest request = ConfirmPlayerRequest.builder()
                                                 .apiToken(config.getAutobotApiToken())
                                                 .tournamentId(checkPlayerResponse

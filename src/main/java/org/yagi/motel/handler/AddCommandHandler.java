@@ -42,7 +42,7 @@ public class AddCommandHandler extends BaseHandler implements CommandHandler {
         String[] commandArgs = context.getCommandArgs();
 
         /// add tg_nickname ms_nickname ms_friend_id game_platform_prefix
-        if (commandArgs.length >= 4) {
+        if (commandArgs.length >= 5) {
             String telegramUsername = StringUtils.normalizeSpace(commandArgs[1]);
             String msNicknameUsername = StringUtils.normalizeSpace(commandArgs[2]);
             Long msFriendId = Long.valueOf(commandArgs[3]);
