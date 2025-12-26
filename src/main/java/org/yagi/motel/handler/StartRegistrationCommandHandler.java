@@ -38,7 +38,7 @@ public class StartRegistrationCommandHandler extends BaseHandler implements Comm
         }
 
         String[] commandArgs = context.getCommandArgs();
-        if (commandArgs.length >= 1) {
+        if (commandArgs.length >= 2) {
             String gamePlatformPrefix = StringUtils.normalizeSpace(commandArgs[1]);
             GamePlatformType gamePlatformType = GamePlatformType.fromStringUnsafe(gamePlatformPrefix);
             if (gamePlatformType == null) {

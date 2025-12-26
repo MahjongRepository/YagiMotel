@@ -42,10 +42,9 @@ public class MeCommandHandler extends BaseHandler implements CommandHandler {
         }
 
         String[] commandArgs = context.getCommandArgs();
-        if (commandArgs.length >= 2) {
+        if (commandArgs.length >= 3) {
             String playerUsername = StringUtils.normalizeSpace(commandArgs[1]);
             String confirmCode = StringUtils.normalizeSpace(commandArgs[2]);
-            //todo: pass error for user about empty confirm code
             if (!confirmCode.isEmpty()) {
                 Map<String, Object> meCommandContext = new HashMap<>();
                 meCommandContext.put(CONFIRM_CODE_CONTEXT_KEY, confirmCode);
@@ -64,6 +63,8 @@ public class MeCommandHandler extends BaseHandler implements CommandHandler {
                                         .requestedResponseLang(context.getRequestedResponseLang())
                                         .build(),
                                 ActorRef.noSender());
+            } else {
+                sendErrorReply(context, ErrorType.MISSED_CONFIRM_CODE);
             }
         } else {
             sendErrorReply(context, ErrorType.MISSED_USERNAME);

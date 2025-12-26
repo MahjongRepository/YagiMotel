@@ -169,12 +169,12 @@ public class DiscordTournamentHelper implements Runnable {
                                                 .username(
                                                         interaction.getMember().isPresent()
                                                                 ? interaction
-                                                                .getMember()
-                                                                .get()
-                                                                .getNicknameMention()
+                                                                        .getMember()
+                                                                        .get()
+                                                                        .getNicknameMention()
                                                                 : interaction
-                                                                .getUser()
-                                                                .getMention())
+                                                                        .getUser()
+                                                                        .getMention())
                                                 .platformType(PlatformType.DISCORD)
                                                 .requestedResponseLang(getRequiredLangFromChannel(chatId, config))
                                                 .build());
@@ -280,6 +280,8 @@ public class DiscordTournamentHelper implements Runnable {
                     return Optional.of("Discord username not found!");
                 case GAME_PLATFORM_INCORRECT:
                     return Optional.of("Game platform incorrect!");
+                case MISSED_CONFIRM_CODE:
+                    return Optional.of("Confirm code is missed!");
                 default:
                     break;
             }
