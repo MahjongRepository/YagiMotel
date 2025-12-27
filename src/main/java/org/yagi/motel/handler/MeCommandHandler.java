@@ -46,23 +46,34 @@ public class MeCommandHandler extends BaseHandler implements CommandHandler {
             String playerUsername = StringUtils.normalizeSpace(commandArgs[1]);
             String confirmCode = StringUtils.normalizeSpace(commandArgs[2]);
             if (!confirmCode.isEmpty()) {
-                Map<String, Object> meCommandContext = new HashMap<>();
-                meCommandContext.put(CONFIRM_CODE_CONTEXT_KEY, confirmCode);
-                getCommandDispatcherActor()
-                        .tell(
-                                InputCommandMessage.builder()
-                                        .messageUniqueId(context.getCommandUniqueId())
-                                        .type(getType())
-                                        .payload(InputCommandContainer.builder()
-                                                .messageValue(playerUsername)
-                                                .senderChatId(context.getSenderChatId())
-                                                .username(context.getUsername())
-                                                .context(meCommandContext)
-                                                .build())
-                                        .platformType(context.getPlatformType())
-                                        .requestedResponseLang(context.getRequestedResponseLang())
-                                        .build(),
-                                ActorRef.noSender());
+                Long validConfirmCode = null;
+                try {
+                    validConfirmCode = Long.valueOf(confirmCode);
+                } catch (Exception ex) {
+                    validConfirmCode = null;
+                }
+
+                if (validConfirmCode != null) {
+                    Map<String, Object> meCommandContext = new HashMap<>();
+                    meCommandContext.put(CONFIRM_CODE_CONTEXT_KEY, validConfirmCode);
+                    getCommandDispatcherActor()
+                            .tell(
+                                    InputCommandMessage.builder()
+                                            .messageUniqueId(context.getCommandUniqueId())
+                                            .type(getType())
+                                            .payload(InputCommandContainer.builder()
+                                                    .messageValue(playerUsername)
+                                                    .senderChatId(context.getSenderChatId())
+                                                    .username(context.getUsername())
+                                                    .context(meCommandContext)
+                                                    .build())
+                                            .platformType(context.getPlatformType())
+                                            .requestedResponseLang(context.getRequestedResponseLang())
+                                            .build(),
+                                    ActorRef.noSender());
+                } else {
+                    sendErrorReply(context, ErrorType.MISSED_CONFIRM_CODE);
+                }
             } else {
                 sendErrorReply(context, ErrorType.MISSED_CONFIRM_CODE);
             }

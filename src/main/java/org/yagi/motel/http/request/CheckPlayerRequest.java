@@ -14,7 +14,7 @@ public class CheckPlayerRequest {
     private String nickname;
 
     @JsonProperty("confirm_code")
-    private String confirmCode;
+    private Long confirmCode;
 
     private String lang;
 }
