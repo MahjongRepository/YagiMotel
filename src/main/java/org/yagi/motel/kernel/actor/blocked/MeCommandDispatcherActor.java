@@ -56,7 +56,7 @@ public class MeCommandDispatcherActor extends AbstractActor {
                     if (message.getType() != null) {
                         switch (message.getType()) {
                             case ME:
-                                String confirmCode = (String) message.getPayload()
+                                Long confirmCode = (Long) message.getPayload()
                                         .getContext()
                                         .get(MeCommandHandler.CONFIRM_CODE_CONTEXT_KEY);
                                 CheckPlayerRequest checkPlayerRequest = CheckPlayerRequest.builder()
