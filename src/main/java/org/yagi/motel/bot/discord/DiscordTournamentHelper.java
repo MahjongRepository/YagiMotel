@@ -24,7 +24,6 @@ import org.yagi.motel.kernel.enums.PlatformType;
 import org.yagi.motel.kernel.model.container.ResultCommandContainer;
 import org.yagi.motel.kernel.model.enums.IsProcessedState;
 import org.yagi.motel.kernel.repository.StateRepository;
-import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -63,7 +62,7 @@ public class DiscordTournamentHelper implements Runnable {
             AppConfig config,
             StateRepository stateRepository,
             BlockingQueue<ResultCommandContainer> messagesQueue) {
-        this.discordExecutor = Executors.newFixedThreadPool(2);
+        this.discordExecutor = Executors.newFixedThreadPool(1);
         this.client = DiscordClient.create(config.getDiscord().getDiscordBotToken());
         this.config = config;
         this.stateRepository = stateRepository;
@@ -81,22 +80,13 @@ public class DiscordTournamentHelper implements Runnable {
     @SuppressWarnings({"checkstyle:OperatorWrap", "checkstyle:MissingJavadocMethod"})
     public void start() {
         discordExecutor.execute(() -> {
-            Mono<Void> login =
-                    client.withGateway((GatewayDiscordClient gateway) -> gateway.on(MessageCreateEvent.class, event -> {
-                        processMessageEvent(event);
-                        return Mono.empty();
-                    }));
-            login.block();
-        });
-
-        discordExecutor.execute(() -> {
-            Mono<Void> login = client.withGateway(
-                    (GatewayDiscordClient gateway) -> gateway.on(ApplicationCommandInteractionEvent.class, event -> {
-                        event.deferReply().block();
-                        processCommandEvent(event);
-                        return Mono.empty();
-                    }));
-            login.block();
+            final GatewayDiscordClient gateway = client.login().block();
+            gateway.on(MessageCreateEvent.class).subscribe(this::processMessageEvent);
+            gateway.on(ApplicationCommandInteractionEvent.class).subscribe(event -> {
+                event.deferReply().block();
+                processCommandEvent(event);
+            });
+            gateway.onDisconnect().block();
         });
     }
 
