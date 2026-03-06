@@ -2,7 +2,6 @@ package org.yagi.motel.bot.discord;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
-import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ApplicationCommandInteractionEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.command.Interaction;
@@ -26,10 +25,7 @@ import org.yagi.motel.kernel.model.enums.IsProcessedState;
 import org.yagi.motel.kernel.repository.StateRepository;
 
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -44,6 +40,7 @@ public class DiscordTournamentHelper implements Runnable {
     private static final String WHITESPACE_STR = " ";
     private static final String SYNC_COMMAND_PREFIX = "/sync";
     private static final Integer COMMAND_UNIQUE_ID_LENGTH = 10;
+    private static final String DISCORD_MAIN_THREAD_NAME = "discord-main-thread";
 
     private final ExecutorService discordExecutor;
     private final DiscordClient client;
@@ -62,7 +59,12 @@ public class DiscordTournamentHelper implements Runnable {
             AppConfig config,
             StateRepository stateRepository,
             BlockingQueue<ResultCommandContainer> messagesQueue) {
-        this.discordExecutor = Executors.newFixedThreadPool(1);
+        this.discordExecutor = Executors.newSingleThreadExecutor(r -> {
+            Thread thread = Executors.defaultThreadFactory().newThread(r);
+            thread.setDaemon(false);
+            thread.setName(DISCORD_MAIN_THREAD_NAME);
+            return thread;
+        });
         this.client = DiscordClient.create(config.getDiscord().getDiscordBotToken());
         this.config = config;
         this.stateRepository = stateRepository;
@@ -79,14 +81,17 @@ public class DiscordTournamentHelper implements Runnable {
 
     @SuppressWarnings({"checkstyle:OperatorWrap", "checkstyle:MissingJavadocMethod"})
     public void start() {
-        discordExecutor.execute(() -> {
-            final GatewayDiscordClient gateway = client.login().block();
-            gateway.on(MessageCreateEvent.class).subscribe(this::processMessageEvent);
-            gateway.on(ApplicationCommandInteractionEvent.class).subscribe(event -> {
-                event.deferReply().block();
-                processCommandEvent(event);
-            });
-            gateway.onDisconnect().block();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdownAndAwaitTermination(discordExecutor)));
+        discordExecutor.submit(() -> {
+            client.withGateway(gateway -> {
+                        gateway.on(MessageCreateEvent.class).subscribe(this::processMessageEvent);
+                        gateway.on(ApplicationCommandInteractionEvent.class).subscribe(event -> {
+                            event.deferReply().block();
+                            processCommandEvent(event);
+                        });
+                        return gateway.onDisconnect();
+                    })
+                    .block();
         });
     }
 
@@ -289,10 +294,13 @@ public class DiscordTournamentHelper implements Runnable {
                 .collectMap(ApplicationCommandData::name)
                 .block();
         if (botCommands != null) {
-            botCommands.values().forEach(command -> client.getApplicationService()
-                    .deleteGlobalApplicationCommand(
-                            config.getDiscord().getApplicationId(), command.id().asLong())
-                    .block());
+            botCommands
+                    .values()
+                    .forEach(command -> client.getApplicationService()
+                            .deleteGlobalApplicationCommand(
+                                    config.getDiscord().getApplicationId(),
+                                    command.id().asLong())
+                            .block());
         }
 
         List<ApplicationCommandRequest> commands = Arrays.asList(
@@ -304,6 +312,18 @@ public class DiscordTournamentHelper implements Runnable {
         client.getApplicationService()
                 .bulkOverwriteGlobalApplicationCommand(config.getDiscord().getApplicationId(), commands)
                 .blockFirst();
+    }
+
+    private static void shutdownAndAwaitTermination(ExecutorService pool) {
+        pool.shutdown();
+        try {
+            if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+                pool.shutdownNow();
+            }
+        } catch (InterruptedException ie) {
+            pool.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 
     @Override

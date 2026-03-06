@@ -138,7 +138,6 @@ public class KernelInitializer {
     }
 
     private static void runDiscordBot(DiscordTournamentHelper discordBot, AppConfig config) {
-        // todo: handle stop thread
         discordBot.start();
         startHandlers(config.getDiscord().getMessagesThreadNumber(), DISCORD_MESSAGES_THREAD_PREFIX, () -> discordBot);
     }
