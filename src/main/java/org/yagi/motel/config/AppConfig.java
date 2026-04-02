@@ -21,5 +21,6 @@ public class AppConfig {
     private String tensoulUrl;
     private String portalUrl;
     private String autobotApiToken;
+    private Boolean withConfirmCode;
     private TournamentsProperties tournaments;
 }

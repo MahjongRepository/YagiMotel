@@ -38,40 +38,48 @@ public class StatusCommandHandler extends BaseHandler implements CommandHandler 
 
         String[] commandArgs = context.getCommandArgs();
         if (commandArgs.length >= 1) {
-            Map<String, Object> statusCommandContextWithTenhou = new HashMap<>();
-            statusCommandContextWithTenhou.put(GAME_PLATFORM_PREFIX_CONTEXT_KEY, GamePlatformType.TENHOU);
-            Map<String, Object> statusCommandContextWithMajsoul = new HashMap<>();
-            statusCommandContextWithMajsoul.put(GAME_PLATFORM_PREFIX_CONTEXT_KEY, GamePlatformType.MAJSOUL);
+            Boolean isTenhouEnabled =
+                    Boolean.TRUE.equals(getConfig().getTournaments().getTenhou().getEnable());
+            Boolean isMajsoulEnabled = Boolean.TRUE.equals(
+                    getConfig().getTournaments().getMajsoul().getEnable());
 
-            getCommandDispatcherActor()
-                    .tell(
-                            InputCommandMessage.builder()
-                                    .messageUniqueId(context.getCommandUniqueId())
-                                    .type(getType())
-                                    .payload(InputCommandContainer.builder()
-                                            .messageValue("")
-                                            .senderChatId(context.getSenderChatId())
-                                            .context(statusCommandContextWithTenhou)
-                                            .build())
-                                    .platformType(context.getPlatformType())
-                                    .requestedResponseLang(context.getRequestedResponseLang())
-                                    .build(),
-                            ActorRef.noSender());
+            if (isTenhouEnabled) {
+                Map<String, Object> statusCommandContextWithTenhou = new HashMap<>();
+                statusCommandContextWithTenhou.put(GAME_PLATFORM_PREFIX_CONTEXT_KEY, GamePlatformType.TENHOU);
+                getCommandDispatcherActor()
+                        .tell(
+                                InputCommandMessage.builder()
+                                        .messageUniqueId(context.getCommandUniqueId())
+                                        .type(getType())
+                                        .payload(InputCommandContainer.builder()
+                                                .messageValue("")
+                                                .senderChatId(context.getSenderChatId())
+                                                .context(statusCommandContextWithTenhou)
+                                                .build())
+                                        .platformType(context.getPlatformType())
+                                        .requestedResponseLang(context.getRequestedResponseLang())
+                                        .build(),
+                                ActorRef.noSender());
+            }
 
-            getCommandDispatcherActor()
-                    .tell(
-                            InputCommandMessage.builder()
-                                    .messageUniqueId(context.getCommandUniqueId())
-                                    .type(getType())
-                                    .payload(InputCommandContainer.builder()
-                                            .messageValue("")
-                                            .senderChatId(context.getSenderChatId())
-                                            .context(statusCommandContextWithMajsoul)
-                                            .build())
-                                    .platformType(context.getPlatformType())
-                                    .requestedResponseLang(context.getRequestedResponseLang())
-                                    .build(),
-                            ActorRef.noSender());
+            if (isMajsoulEnabled) {
+                Map<String, Object> statusCommandContextWithMajsoul = new HashMap<>();
+                statusCommandContextWithMajsoul.put(GAME_PLATFORM_PREFIX_CONTEXT_KEY, GamePlatformType.MAJSOUL);
+                getCommandDispatcherActor()
+                        .tell(
+                                InputCommandMessage.builder()
+                                        .messageUniqueId(context.getCommandUniqueId())
+                                        .type(getType())
+                                        .payload(InputCommandContainer.builder()
+                                                .messageValue("")
+                                                .senderChatId(context.getSenderChatId())
+                                                .context(statusCommandContextWithMajsoul)
+                                                .build())
+                                        .platformType(context.getPlatformType())
+                                        .requestedResponseLang(context.getRequestedResponseLang())
+                                        .build(),
+                                ActorRef.noSender());
+            }
         }
     }
 

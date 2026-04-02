@@ -7,7 +7,10 @@ import org.yagi.motel.handler.context.CommandContext;
 import org.yagi.motel.handler.enums.ErrorType;
 import org.yagi.motel.handler.holder.PlatformCallbacksHolder;
 import org.yagi.motel.kernel.enums.CommandType;
+import org.yagi.motel.kernel.message.InputCommandMessage;
+import org.yagi.motel.kernel.model.container.InputCommandContainer;
 import org.yagi.motel.kernel.model.enums.GamePlatformType;
+import org.yagi.motel.utils.GamePlatformUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,14 +46,19 @@ public class AddPenaltyGameCommandHandler extends BaseHandler implements Command
             if (gamePlatformType == null) {
                 sendErrorReply(context, ErrorType.GAME_PLATFORM_INCORRECT);
             } else {
+                if (!GamePlatformUtils.isEnable(getConfig(), gamePlatformType)) {
+                    sendErrorReply(context, ErrorType.TOURNAMENT_DISABLE);
+                    return;
+                }
+
                 Map<String, Object> addPenaltyGameCommandContext = new HashMap<>();
                 addPenaltyGameCommandContext.put(GAME_PLATFORM_PREFIX_CONTEXT_KEY, gamePlatformType);
                 getCommandDispatcherActor()
                         .tell(
-                                org.yagi.motel.kernel.message.InputCommandMessage.builder()
+                                InputCommandMessage.builder()
                                         .messageUniqueId(context.getCommandUniqueId())
                                         .type(getType())
-                                        .payload(org.yagi.motel.kernel.model.container.InputCommandContainer.builder()
+                                        .payload(InputCommandContainer.builder()
                                                 .messageValue(commandValue)
                                                 .senderChatId(context.getSenderChatId())
                                                 .context(addPenaltyGameCommandContext)

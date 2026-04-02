@@ -66,7 +66,10 @@ public class LogCommandDispatcherActor extends AbstractActor {
             String hash = hashOptional.get();
             String tensoulUrl = String.format(
                     "%s/convert/?id=%s&lobby_id=%d&app_token=%s",
-                    config.getTensoulUrl(), hash, config.getTournaments().getMajsoul().getLobbyId(), config.getTensoulAppToken());
+                    config.getTensoulUrl(),
+                    hash,
+                    config.getTournaments().getMajsoul().getLobbyId(),
+                    config.getTensoulAppToken());
             tensoulUrl = UrlHelper.normalizeUrl(tensoulUrl);
             Optional<Map> replayInfo = RestClient.sendGet(mapper, RestClient.prepareGetRequest(tensoulUrl), Map.class);
 
@@ -169,6 +172,7 @@ public class LogCommandDispatcherActor extends AbstractActor {
                     if (message.getType() != null) {
                         switch (message.getType()) {
                             case LOG:
+                                // todo: ugly hack
                                 if (message.getPayload().getMessageValue().contains("tenhou.net")) {
                                     processTenhouLog(message);
                                 } else {

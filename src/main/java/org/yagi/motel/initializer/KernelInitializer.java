@@ -55,33 +55,45 @@ public class KernelInitializer {
             final AppConfig config,
             final StateRepository stateRepository,
             final BlockingQueue<NotificationContainer> notificationsQueue) {
-        final ActorRef checkTenhouNotificationsDispatcherActor = actorSystem.actorOf(
-                CheckNotificationsDispatcherActor.props(config, stateRepository, notificationsQueue, GamePlatformType.TENHOU)
-                        .withRouter(new SmallestMailboxPool(1)),
-                CheckNotificationsDispatcherActor.ACTOR_NAME + "-tenhou");
-        actorSystem
-                .scheduler()
-                .scheduleWithFixedDelay(
-                        Duration.ZERO,
-                        Duration.ofSeconds(config.getCheckNotificationsIntervalInSeconds()),
-                        checkTenhouNotificationsDispatcherActor,
-                        new CheckNotificationMessage(),
-                        actorSystem.dispatcher(),
-                        ActorRef.noSender());
 
-        final ActorRef checkMajsoulNotificationsDispatcherActor = actorSystem.actorOf(
-                CheckNotificationsDispatcherActor.props(config, stateRepository, notificationsQueue, GamePlatformType.MAJSOUL)
-                        .withRouter(new SmallestMailboxPool(1)),
-                CheckNotificationsDispatcherActor.ACTOR_NAME + "-majsoul");
-        actorSystem
-                .scheduler()
-                .scheduleWithFixedDelay(
-                        Duration.ZERO,
-                        Duration.ofSeconds(config.getCheckNotificationsIntervalInSeconds()),
-                        checkMajsoulNotificationsDispatcherActor,
-                        new CheckNotificationMessage(),
-                        actorSystem.dispatcher(),
-                        ActorRef.noSender());
+        Boolean isTenhouEnabled =
+                Boolean.TRUE.equals(config.getTournaments().getTenhou().getEnable());
+        Boolean isMajsoulEnabled =
+                Boolean.TRUE.equals(config.getTournaments().getMajsoul().getEnable());
+
+        if (isTenhouEnabled) {
+            final ActorRef checkTenhouNotificationsDispatcherActor = actorSystem.actorOf(
+                    CheckNotificationsDispatcherActor.props(
+                                    config, stateRepository, notificationsQueue, GamePlatformType.TENHOU)
+                            .withRouter(new SmallestMailboxPool(1)),
+                    CheckNotificationsDispatcherActor.ACTOR_NAME + "-tenhou");
+            actorSystem
+                    .scheduler()
+                    .scheduleWithFixedDelay(
+                            Duration.ZERO,
+                            Duration.ofSeconds(config.getCheckNotificationsIntervalInSeconds()),
+                            checkTenhouNotificationsDispatcherActor,
+                            new CheckNotificationMessage(),
+                            actorSystem.dispatcher(),
+                            ActorRef.noSender());
+        }
+
+        if (isMajsoulEnabled) {
+            final ActorRef checkMajsoulNotificationsDispatcherActor = actorSystem.actorOf(
+                    CheckNotificationsDispatcherActor.props(
+                                    config, stateRepository, notificationsQueue, GamePlatformType.MAJSOUL)
+                            .withRouter(new SmallestMailboxPool(1)),
+                    CheckNotificationsDispatcherActor.ACTOR_NAME + "-majsoul");
+            actorSystem
+                    .scheduler()
+                    .scheduleWithFixedDelay(
+                            Duration.ZERO,
+                            Duration.ofSeconds(config.getCheckNotificationsIntervalInSeconds()),
+                            checkMajsoulNotificationsDispatcherActor,
+                            new CheckNotificationMessage(),
+                            actorSystem.dispatcher(),
+                            ActorRef.noSender());
+        }
     }
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
@@ -171,15 +183,15 @@ public class KernelInitializer {
             BlockingQueue<ResultCommandContainer> discordMessagesQueue) {
         final TgTournamentHelper tgBot = PlatformUtils.isPlatformEnable(config, PlatformType.TG)
                 ? new TgTournamentHelper(
-                commandDispatcherActor, errorCommandDispatcherActor, config, stateRepository, tgMessagesQueue)
+                        commandDispatcherActor, errorCommandDispatcherActor, config, stateRepository, tgMessagesQueue)
                 : null;
         final DiscordTournamentHelper discordBot = PlatformUtils.isPlatformEnable(config, PlatformType.DISCORD)
                 ? new DiscordTournamentHelper(
-                commandDispatcherActor,
-                errorCommandDispatcherActor,
-                config,
-                stateRepository,
-                discordMessagesQueue)
+                        commandDispatcherActor,
+                        errorCommandDispatcherActor,
+                        config,
+                        stateRepository,
+                        discordMessagesQueue)
                 : null;
         return CommunicationPlatformsContainer.builder()
                 .tgBot(tgBot)

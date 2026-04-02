@@ -8,6 +8,8 @@ import org.yagi.motel.handler.holder.PlatformCallbacksHolder;
 import org.yagi.motel.kernel.enums.CommandType;
 import org.yagi.motel.kernel.message.InputCommandMessage;
 import org.yagi.motel.kernel.model.container.InputCommandContainer;
+import org.yagi.motel.kernel.model.enums.GamePlatformType;
+import org.yagi.motel.utils.GamePlatformUtils;
 
 import java.util.Set;
 
@@ -36,6 +38,14 @@ public class LogCommandHandler extends BaseHandler implements CommandHandler {
             PlatformCallbacksHolder callbacksHolder = getPlatformCallbacksHolder();
             // todo ugly hack
             boolean isTenhouLog = commandArgs[1].contains("tenhou.net");
+
+            if (isTenhouLog) {
+                if (!GamePlatformUtils.isEnable(getConfig(), GamePlatformType.TENHOU)) {
+                    sendErrorReply(context, ErrorType.TOURNAMENT_DISABLE);
+                    return;
+                }
+            }
+
             if (isTenhouLog
                     || context.getSenderChatId()
                             .equals(callbacksHolder

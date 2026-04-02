@@ -29,6 +29,24 @@ public class MeCommandHandler extends BaseHandler implements CommandHandler {
         super(config, commandDispatcherActor, errorCommandDispatcherActor, platformCallbacksHolder, allowedChatIds);
     }
 
+    private void processCommand(CommandContext context, Map<String, Object> meCommandContext, String playerUsername) {
+        getCommandDispatcherActor()
+                .tell(
+                        InputCommandMessage.builder()
+                                .messageUniqueId(context.getCommandUniqueId())
+                                .type(getType())
+                                .payload(InputCommandContainer.builder()
+                                        .messageValue(playerUsername)
+                                        .senderChatId(context.getSenderChatId())
+                                        .username(context.getUsername())
+                                        .context(meCommandContext)
+                                        .build())
+                                .platformType(context.getPlatformType())
+                                .requestedResponseLang(context.getRequestedResponseLang())
+                                .build(),
+                        ActorRef.noSender());
+    }
+
     @Override
     public void handleCommand(final CommandContext context) {
         if (!checkPermission(context)) {
@@ -42,40 +60,32 @@ public class MeCommandHandler extends BaseHandler implements CommandHandler {
         }
 
         String[] commandArgs = context.getCommandArgs();
-        if (commandArgs.length >= 3) {
+        Boolean withConfirmCode = Boolean.TRUE.equals(getConfig().getWithConfirmCode());
+        int requiredCommandLength = withConfirmCode ? 3 : 2;
+        if (commandArgs.length >= requiredCommandLength) {
             String playerUsername = StringUtils.normalizeSpace(commandArgs[1]);
-            String confirmCode = StringUtils.normalizeSpace(commandArgs[2]);
-            if (!confirmCode.isEmpty()) {
-                Long validConfirmCode = null;
-                try {
-                    validConfirmCode = Long.valueOf(confirmCode);
-                } catch (Exception ex) {
-                    validConfirmCode = null;
-                }
+            if (!withConfirmCode) {
+                processCommand(context, null, playerUsername);
+            } else {
+                String confirmCode = StringUtils.normalizeSpace(commandArgs[2]);
+                if (!confirmCode.isEmpty()) {
+                    Long validConfirmCode = null;
+                    try {
+                        validConfirmCode = Long.valueOf(confirmCode);
+                    } catch (Exception ex) {
+                        validConfirmCode = null;
+                    }
 
-                if (validConfirmCode != null) {
-                    Map<String, Object> meCommandContext = new HashMap<>();
-                    meCommandContext.put(CONFIRM_CODE_CONTEXT_KEY, validConfirmCode);
-                    getCommandDispatcherActor()
-                            .tell(
-                                    InputCommandMessage.builder()
-                                            .messageUniqueId(context.getCommandUniqueId())
-                                            .type(getType())
-                                            .payload(InputCommandContainer.builder()
-                                                    .messageValue(playerUsername)
-                                                    .senderChatId(context.getSenderChatId())
-                                                    .username(context.getUsername())
-                                                    .context(meCommandContext)
-                                                    .build())
-                                            .platformType(context.getPlatformType())
-                                            .requestedResponseLang(context.getRequestedResponseLang())
-                                            .build(),
-                                    ActorRef.noSender());
+                    if (validConfirmCode != null) {
+                        Map<String, Object> meCommandContext = new HashMap<>();
+                        meCommandContext.put(CONFIRM_CODE_CONTEXT_KEY, validConfirmCode);
+                        processCommand(context, meCommandContext, playerUsername);
+                    } else {
+                        sendErrorReply(context, ErrorType.MISSED_CONFIRM_CODE);
+                    }
                 } else {
                     sendErrorReply(context, ErrorType.MISSED_CONFIRM_CODE);
                 }
-            } else {
-                sendErrorReply(context, ErrorType.MISSED_CONFIRM_CODE);
             }
         } else {
             sendErrorReply(context, ErrorType.MISSED_USERNAME);

@@ -10,6 +10,7 @@ import org.yagi.motel.kernel.enums.CommandType;
 import org.yagi.motel.kernel.message.InputCommandMessage;
 import org.yagi.motel.kernel.model.container.InputCommandContainer;
 import org.yagi.motel.kernel.model.enums.GamePlatformType;
+import org.yagi.motel.utils.GamePlatformUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +53,11 @@ public class AddCommandHandler extends BaseHandler implements CommandHandler {
             if (gamePlatformType == null) {
                 sendErrorReply(context, ErrorType.GAME_PLATFORM_INCORRECT);
             } else {
+                if (!GamePlatformUtils.isEnable(getConfig(), gamePlatformType)) {
+                    sendErrorReply(context, ErrorType.TOURNAMENT_DISABLE);
+                    return;
+                }
+
                 Map<String, Object> addCommandContext = new HashMap<>();
                 addCommandContext.put(MS_NICKNAME_CONTEXT_KEY, msNicknameUsername);
                 addCommandContext.put(MS_FRIEND_ID_CONTEXT_KEY, msFriendId);

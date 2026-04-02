@@ -277,6 +277,8 @@ public class DiscordTournamentHelper implements Runnable {
                     return Optional.of("Game platform incorrect!");
                 case MISSED_CONFIRM_CODE:
                     return Optional.of("Confirm code is missed or incorrect!");
+                case TOURNAMENT_DISABLE:
+                    return Optional.of("Tournament is disable!");
                 default:
                     break;
             }

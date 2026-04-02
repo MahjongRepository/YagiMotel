@@ -30,12 +30,15 @@ tensoulAppToken: 'token'
 tensoulUrl: 'http://127.0.0.1:9187'
 portalUrl: 'http://127.0.0.1:9999'
 autobotApiToken: 'autobot_token'
+withConfirmCode: false
 tournaments:
   tenhou:
+    enable: false
     tournamentId: -1
     lobbyId: -1
     gamePlatform: tenhou
   majsoul:
+    enable: false
     tournamentId: -1
     lobbyId: -1
     gamePlatform: majsoul
