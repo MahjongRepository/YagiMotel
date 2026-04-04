@@ -12,7 +12,17 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import org.yagi.motel.config.AppConfig;
-import org.yagi.motel.handler.*;
+import org.yagi.motel.handler.AddCommandHandler;
+import org.yagi.motel.handler.AddPenaltyGameCommandHandler;
+import org.yagi.motel.handler.CloseRegistrationCommandHandler;
+import org.yagi.motel.handler.CommandHandler;
+import org.yagi.motel.handler.LogCommandHandler;
+import org.yagi.motel.handler.MeCommandHandler;
+import org.yagi.motel.handler.StartRegistrationCommandHandler;
+import org.yagi.motel.handler.StartServeCommandHandler;
+import org.yagi.motel.handler.StatusCommandHandler;
+import org.yagi.motel.handler.StopServeCommandHandler;
+import org.yagi.motel.handler.UpdateTeamsCommandHandler;
 import org.yagi.motel.handler.context.CommandContext;
 import org.yagi.motel.handler.context.HandlerErrorContext;
 import org.yagi.motel.handler.holder.PlatformCallbacksHolder;
@@ -22,12 +32,26 @@ import org.yagi.motel.kernel.model.enums.IsProcessedState;
 import org.yagi.motel.kernel.model.enums.Lang;
 import org.yagi.motel.kernel.repository.StateRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.*;
+import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getAddCommandPermissions;
+import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getAddPenaltyGameCommandPermissions;
+import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getCloseRegistrationCommandPermissions;
+import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getMeCommandPermissions;
+import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getStartRegistrationCommandPermissions;
+import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getStartServeCommandPermissions;
+import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getStopServeCommandPermissions;
+import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvider.getUpdateTeamsCommandPermissions;
 
 @Slf4j
 @SuppressWarnings("checkstyle:MissingJavadocType")

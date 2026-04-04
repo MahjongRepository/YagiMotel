@@ -51,7 +51,9 @@ public class StartRegistrationCommandDispatcherActor extends AbstractActor {
                     if (message.getType() != null) {
                         switch (message.getType()) {
                             case START_REGISTRATION:
-                                GamePlatformType gamePlatformType = (GamePlatformType) message.getPayload().getContext().get(StartRegistrationCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY);
+                                GamePlatformType gamePlatformType = (GamePlatformType) message.getPayload()
+                                        .getContext()
+                                        .get(StartRegistrationCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY);
                                 OpenRegistrationRequest request = OpenRegistrationRequest.builder()
                                         .apiToken(config.getAutobotApiToken())
                                         .tournamentId(GamePlatformUtils.getTournamentId(config, gamePlatformType))
@@ -65,7 +67,7 @@ public class StartRegistrationCommandDispatcherActor extends AbstractActor {
 
                                 if (baseResponse.isPresent()
                                         && Boolean.TRUE.equals(
-                                        baseResponse.get().getSuccess())) {
+                                                baseResponse.get().getSuccess())) {
                                     commandResultsQueue.put(ResultCommandContainer.builder()
                                             .uniqueMessageId(message.getMessageUniqueId())
                                             .resultMessage(message.getPayload().getMessageValue())

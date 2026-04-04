@@ -63,7 +63,8 @@ public class CheckNotificationsDispatcherActor extends AbstractActor {
             StateRepository stateRepository,
             BlockingQueue<NotificationContainer> notificationsQueue,
             GamePlatformType gamePlatformType) {
-        return Props.create(CheckNotificationsDispatcherActor.class, config, stateRepository, notificationsQueue, gamePlatformType);
+        return Props.create(
+                CheckNotificationsDispatcherActor.class, config, stateRepository, notificationsQueue, gamePlatformType);
     }
 
     @Override
@@ -85,9 +86,9 @@ public class CheckNotificationsDispatcherActor extends AbstractActor {
 
                         if (checkNotificationResponse.isPresent()
                                 && !checkNotificationResponse
-                                .get()
-                                .getNotifications()
-                                .isEmpty()) {
+                                        .get()
+                                        .getNotifications()
+                                        .isEmpty()) {
                             for (final Notification notification :
                                     checkNotificationResponse.get().getNotifications()) {
                                 processNotification(notification);

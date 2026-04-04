@@ -51,7 +51,9 @@ public class AddPenaltyGameCommandDispatcherActor extends AbstractActor {
                     if (message.getType() != null) {
                         switch (message.getType()) {
                             case ADD_PENALTY_GAME:
-                                GamePlatformType gamePlatformType = (GamePlatformType) message.getPayload().getContext().get(AddPenaltyGameCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY);
+                                GamePlatformType gamePlatformType = (GamePlatformType) message.getPayload()
+                                        .getContext()
+                                        .get(AddPenaltyGameCommandHandler.GAME_PLATFORM_PREFIX_CONTEXT_KEY);
                                 AddPenaltyGameRequest request = AddPenaltyGameRequest.builder()
                                         .apiToken(config.getAutobotApiToken())
                                         .tournamentId(GamePlatformUtils.getTournamentId(config, gamePlatformType))
