@@ -7,6 +7,10 @@ import org.jooq.impl.DSL;
 import org.yagi.motel.kernel.model.dsl.Tables;
 import org.yagi.motel.kernel.model.enums.IsProcessedState;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -29,9 +33,10 @@ public class StateRepository {
     }
 
     private void prepareDb(DSLContext dsl) {
-        dsl.execute("PRAGMA encoding = \"UTF-8\";");
-        dsl.execute("PRAGMA synchronous=FULL;");
-        dsl.execute("CREATE TABLE IF NOT EXISTS state (id tinyint PRIMARY KEY, is_processed_enable tinyint);");
+        InputStream script = this.getClass().getClassLoader().getResourceAsStream("create.sql");
+        new BufferedReader(new InputStreamReader(script, StandardCharsets.UTF_8))
+                .lines()
+                .forEach(dsl::execute);
     }
 
     @SuppressWarnings("checkstyle:MissingJavadocMethod")
