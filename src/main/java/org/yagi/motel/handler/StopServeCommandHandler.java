@@ -27,11 +27,6 @@ public class StopServeCommandHandler extends BaseHandler implements CommandHandl
 
     @Override
     public void handleCommand(final CommandContext context) {
-        if (!checkPermission(context)) {
-            sendErrorReply(context, ErrorType.COMMAND_NOT_ALLOWED);
-            return;
-        }
-
         String[] commandArgs = context.getCommandArgs();
         if (commandArgs.length >= 1) {
             if (!StringUtils.isEmpty(context.getUsername())) {
@@ -58,6 +53,11 @@ public class StopServeCommandHandler extends BaseHandler implements CommandHandl
     @Override
     public boolean checkPermission(CommandContext context) {
         return super.checkPermission(context);
+    }
+
+    @Override
+    public void sendErrorReply(CommandContext context, ErrorType errorType) {
+        super.sendErrorReply(context, errorType);
     }
 
     @Override

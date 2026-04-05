@@ -28,6 +28,7 @@ import org.yagi.motel.handler.StopServeCommandHandler;
 import org.yagi.motel.handler.UpdateTeamsCommandHandler;
 import org.yagi.motel.handler.context.CommandContext;
 import org.yagi.motel.handler.context.HandlerErrorContext;
+import org.yagi.motel.handler.executor.CommandHandlerExecutor;
 import org.yagi.motel.handler.holder.PlatformCallbacksHolder;
 import org.yagi.motel.kernel.enums.PlatformType;
 import org.yagi.motel.kernel.model.container.ResultCommandContainer;
@@ -79,7 +80,7 @@ public class DiscordTournamentHelper implements Runnable {
     private final DiscordClient client;
     private final AppConfig config;
     private final StateRepository stateRepository;
-    private final Map<String, CommandHandler> handlers;
+    private final CommandHandlerExecutor handlersExecutor;
     private final BlockingQueue<ResultCommandContainer> messagesQueue;
 
     // todo: clear by timeout for TTL event
@@ -108,7 +109,7 @@ public class DiscordTournamentHelper implements Runnable {
         args.add(errorCommandDispatcherActor);
         args.add(registerCallbacks());
 
-        this.handlers = registerHandlers(args, config);
+        this.handlersExecutor = new CommandHandlerExecutor(registerHandlers(args, config));
         this.eventCache = new ConcurrentHashMap<>();
     }
 
@@ -149,18 +150,17 @@ public class DiscordTournamentHelper implements Runnable {
                             sendNotification("All command synced!", chatId);
                         }
 
-                        if (handlers.containsKey(commandPrefix)) {
-                            handlers.get(commandPrefix)
-                                    .handleCommand(CommandContext.builder()
-                                            .commandUniqueId(Long.valueOf(
-                                                    RandomStringUtils.randomNumeric(COMMAND_UNIQUE_ID_LENGTH)))
-                                            .commandArgs(commandArgs)
-                                            .senderChatId(chatId)
-                                            .username(user.getMention())
-                                            .platformType(PlatformType.DISCORD)
-                                            .requestedResponseLang(getRequiredLangFromChannel(chatId, config))
-                                            .build());
-                        }
+                        handlersExecutor.tryExecuteHandler(
+                                commandPrefix,
+                                () -> CommandContext.builder()
+                                        .commandUniqueId(
+                                                Long.valueOf(RandomStringUtils.randomNumeric(COMMAND_UNIQUE_ID_LENGTH)))
+                                        .commandArgs(commandArgs)
+                                        .senderChatId(chatId)
+                                        .username(user.getMention())
+                                        .platformType(PlatformType.DISCORD)
+                                        .requestedResponseLang(getRequiredLangFromChannel(chatId, config))
+                                        .build());
                     }
                 }
             }
@@ -185,27 +185,28 @@ public class DiscordTournamentHelper implements Runnable {
                         String[] commandArgs = DiscordInteractionUtils.prepareHandlerArgs(
                                 commandPrefix, DiscordInteractionUtils.extractArgsFromInteraction(interaction));
                         if (commandArgs.length >= 1) {
-                            if (handlers.containsKey(commandPrefix)) {
-                                final Long eventKey =
-                                        Long.valueOf(RandomStringUtils.randomNumeric(COMMAND_UNIQUE_ID_LENGTH));
+                            final Long eventKey =
+                                    Long.valueOf(RandomStringUtils.randomNumeric(COMMAND_UNIQUE_ID_LENGTH));
+                            final boolean isHandlerExecuted = handlersExecutor.tryExecuteHandler(
+                                    commandPrefix,
+                                    () -> CommandContext.builder()
+                                            .commandUniqueId(eventKey)
+                                            .commandArgs(commandArgs)
+                                            .senderChatId(chatId)
+                                            .username(
+                                                    interaction.getMember().isPresent()
+                                                            ? interaction
+                                                                    .getMember()
+                                                                    .get()
+                                                                    .getNicknameMention()
+                                                            : interaction
+                                                                    .getUser()
+                                                                    .getMention())
+                                            .platformType(PlatformType.DISCORD)
+                                            .requestedResponseLang(getRequiredLangFromChannel(chatId, config))
+                                            .build());
+                            if (isHandlerExecuted) {
                                 eventCache.putIfAbsent(eventKey, event);
-                                handlers.get(commandPrefix)
-                                        .handleCommand(CommandContext.builder()
-                                                .commandUniqueId(eventKey)
-                                                .commandArgs(commandArgs)
-                                                .senderChatId(chatId)
-                                                .username(
-                                                        interaction.getMember().isPresent()
-                                                                ? interaction
-                                                                        .getMember()
-                                                                        .get()
-                                                                        .getNicknameMention()
-                                                                : interaction
-                                                                        .getUser()
-                                                                        .getMention())
-                                                .platformType(PlatformType.DISCORD)
-                                                .requestedResponseLang(getRequiredLangFromChannel(chatId, config))
-                                                .build());
                                 eventIsProcessed = true;
                             }
                         }

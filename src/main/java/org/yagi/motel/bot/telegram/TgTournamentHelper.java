@@ -25,6 +25,7 @@ import org.yagi.motel.handler.StopServeCommandHandler;
 import org.yagi.motel.handler.UpdateTeamsCommandHandler;
 import org.yagi.motel.handler.context.CommandContext;
 import org.yagi.motel.handler.context.HandlerErrorContext;
+import org.yagi.motel.handler.executor.CommandHandlerExecutor;
 import org.yagi.motel.handler.holder.PlatformCallbacksHolder;
 import org.yagi.motel.kernel.enums.PlatformType;
 import org.yagi.motel.kernel.model.container.ResultCommandContainer;
@@ -58,7 +59,7 @@ import static org.yagi.motel.bot.telegram.utils.TelegramCommandPermissionsProvid
 public class TgTournamentHelper implements LongPollingSingleThreadUpdateConsumer, Runnable {
     private static final String WHITESPACE_STR = " ";
     private static final Integer COMMAND_UNIQUE_ID_LENGTH = 10;
-    private final Map<String, CommandHandler> handlers;
+    private final CommandHandlerExecutor handlersExecutor;
     private final AppConfig config;
     private final StateRepository stateRepository;
     private final BlockingQueue<ResultCommandContainer> messagesQueue;
@@ -81,7 +82,7 @@ public class TgTournamentHelper implements LongPollingSingleThreadUpdateConsumer
         args.add(errorCommandDispatcherActor);
         args.add(registerCallbacks());
 
-        this.handlers = registerHandlers(args, config);
+        this.handlersExecutor = new CommandHandlerExecutor(registerHandlers(args, config));
     }
 
     @Override
@@ -102,18 +103,17 @@ public class TgTournamentHelper implements LongPollingSingleThreadUpdateConsumer
                 String[] commandArgs = inputText.split(WHITESPACE_STR);
                 if (commandArgs.length >= 1) {
                     String commandPrefix = StringUtils.normalizeSpace(commandArgs[0]);
-                    if (handlers.containsKey(commandPrefix)) {
-                        handlers.get(commandPrefix)
-                                .handleCommand(CommandContext.builder()
-                                        .commandUniqueId(
-                                                Long.valueOf(RandomStringUtils.randomNumeric(COMMAND_UNIQUE_ID_LENGTH)))
-                                        .commandArgs(commandArgs)
-                                        .senderChatId(chatId)
-                                        .username((username != null && username.isPresent()) ? username.get() : null)
-                                        .platformType(PlatformType.TG)
-                                        .requestedResponseLang(Lang.RU.getLang())
-                                        .build());
-                    }
+                    handlersExecutor.tryExecuteHandler(
+                            commandPrefix,
+                            () -> CommandContext.builder()
+                                    .commandUniqueId(
+                                            Long.valueOf(RandomStringUtils.randomNumeric(COMMAND_UNIQUE_ID_LENGTH)))
+                                    .commandArgs(commandArgs)
+                                    .senderChatId(chatId)
+                                    .username((username != null && username.isPresent()) ? username.get() : null)
+                                    .platformType(PlatformType.TG)
+                                    .requestedResponseLang(Lang.RU.getLang())
+                                    .build());
                 }
             }
         }

@@ -33,11 +33,6 @@ public class AddPenaltyGameCommandHandler extends BaseHandler implements Command
 
     @Override
     public void handleCommand(final CommandContext context) {
-        if (!checkPermission(context)) {
-            sendErrorReply(context, ErrorType.COMMAND_NOT_ALLOWED);
-            return;
-        }
-
         String[] commandArgs = context.getCommandArgs();
         if (commandArgs.length >= 3) {
             String commandValue = commandArgs[1].trim();
@@ -74,6 +69,11 @@ public class AddPenaltyGameCommandHandler extends BaseHandler implements Command
     @Override
     public boolean checkPermission(CommandContext context) {
         return super.checkPermission(context);
+    }
+
+    @Override
+    public void sendErrorReply(CommandContext context, ErrorType errorType) {
+        super.sendErrorReply(context, errorType);
     }
 
     @Override

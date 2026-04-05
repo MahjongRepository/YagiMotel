@@ -31,11 +31,6 @@ public class StatusCommandHandler extends BaseHandler implements CommandHandler 
 
     @Override
     public void handleCommand(final CommandContext context) {
-        if (!checkPermission(context)) {
-            sendErrorReply(context, ErrorType.COMMAND_NOT_ALLOWED);
-            return;
-        }
-
         String[] commandArgs = context.getCommandArgs();
         if (commandArgs.length >= 1) {
             Boolean isTenhouEnabled =
@@ -86,6 +81,11 @@ public class StatusCommandHandler extends BaseHandler implements CommandHandler 
     @Override
     public boolean checkPermission(CommandContext context) {
         return super.checkPermission(context);
+    }
+
+    @Override
+    public void sendErrorReply(CommandContext context, ErrorType errorType) {
+        super.sendErrorReply(context, errorType);
     }
 
     @Override
